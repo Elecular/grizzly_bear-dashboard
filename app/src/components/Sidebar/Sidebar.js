@@ -24,7 +24,7 @@ import PerfectScrollbar from "perfect-scrollbar";
 // reactstrap components
 import { Nav, Collapse } from "reactstrap";
 
-var ps;
+let ps;
 
 class Sidebar extends React.Component {
   constructor(props) {
