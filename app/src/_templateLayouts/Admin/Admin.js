@@ -1,5 +1,20 @@
-import React from "react";
+/*!
 
+=========================================================
+* Black Dashboard PRO React - v1.1.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
+* Copyright 2020 Creative Tim (https://www.creative-tim.com)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
+import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
@@ -10,23 +25,24 @@ import NotificationAlert from "react-notification-alert";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
+import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
+
 import routes from "routes.js";
+
 import logo from "assets/img/react-logo.png";
 
-let ps;
+var ps;
 
-class DashboardLayout extends React.Component {
+class Admin extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             activeColor: "blue",
-            sidebarMini: false,
+            sidebarMini: true,
             opacity: 0,
             sidebarOpened: false,
         };
-        document.body.classList.toggle("sidebar-mini");
     }
-
     componentDidMount() {
         if (navigator.platform.indexOf("Win") > -1) {
             document.documentElement.classList.add("perfect-scrollbar-on");
@@ -43,7 +59,6 @@ class DashboardLayout extends React.Component {
         }
         window.addEventListener("scroll", this.showNavbarButton);
     }
-
     componentWillUnmount() {
         if (navigator.platform.indexOf("Win") > -1) {
             ps.destroy();
@@ -56,7 +71,6 @@ class DashboardLayout extends React.Component {
         }
         window.removeEventListener("scroll", this.showNavbarButton);
     }
-
     componentDidUpdate(e) {
         if (e.location.pathname !== e.history.location.pathname) {
             if (navigator.platform.indexOf("Win") > -1) {
@@ -70,7 +84,6 @@ class DashboardLayout extends React.Component {
             this.refs.mainPanel.scrollTop = 0;
         }
     }
-
     showNavbarButton = () => {
         if (
             document.documentElement.scrollTop > 50 ||
@@ -86,13 +99,12 @@ class DashboardLayout extends React.Component {
             this.setState({ opacity: 0 });
         }
     };
-
     getRoutes = (routes) => {
         return routes.map((prop, key) => {
             if (prop.collapse) {
                 return this.getRoutes(prop.views);
             }
-            if (prop.layout === "/dashboard") {
+            if (prop.layout === "/admin") {
                 return (
                     <Route
                         path={prop.layout + prop.path}
@@ -105,7 +117,6 @@ class DashboardLayout extends React.Component {
             }
         });
     };
-
     getActiveRoute = (routes) => {
         let activeRoute = "Default Brand Text";
         for (let i = 0; i < routes.length; i++) {
@@ -126,25 +137,41 @@ class DashboardLayout extends React.Component {
         }
         return activeRoute;
     };
-
+    handleActiveClick = (color) => {
+        this.setState({ activeColor: color });
+    };
     handleMiniClick = () => {
+        let notifyMessage = "Sidebar mini ";
+        if (document.body.classList.contains("sidebar-mini")) {
+            this.setState({ sidebarMini: false });
+            notifyMessage += "deactivated...";
+        } else {
+            this.setState({ sidebarMini: true });
+            notifyMessage += "activated...";
+        }
+        let options = {};
+        options = {
+            place: "tr",
+            message: notifyMessage,
+            type: "primary",
+            icon: "tim-icons icon-bell-55",
+            autoDismiss: 7,
+        };
+        this.refs.notificationAlert.notificationAlert(options);
         document.body.classList.toggle("sidebar-mini");
     };
-
     toggleSidebar = () => {
         this.setState({
             sidebarOpened: !this.state.sidebarOpened,
         });
         document.documentElement.classList.toggle("nav-open");
     };
-
     closeSidebar = () => {
         this.setState({
             sidebarOpened: false,
         });
         document.documentElement.classList.remove("nav-open");
     };
-
     render() {
         return (
             <div className="wrapper">
@@ -168,8 +195,8 @@ class DashboardLayout extends React.Component {
                     routes={routes}
                     activeColor={this.state.activeColor}
                     logo={{
-                        outterLink: "",
-                        text: "GAMEGRAM",
+                        outterLink: "https://www.creative-tim.com/",
+                        text: "Creative Tim",
                         imgSrc: logo,
                     }}
                     closeSidebar={this.closeSidebar}
@@ -188,13 +215,26 @@ class DashboardLayout extends React.Component {
                     />
                     <Switch>
                         {this.getRoutes(routes)}
-                        <Redirect from="*" to="/dashboard/experiments" />
+                        <Redirect from="*" to="/admin/dashboard" />
                     </Switch>
-                    <Footer fluid />
+                    {
+                        // we don't want the Footer to be rendered on full screen maps page
+                        this.props.location.pathname.indexOf(
+                            "full-screen-map",
+                        ) !== -1 ? null : (
+                            <Footer fluid />
+                        )
+                    }
                 </div>
+                <FixedPlugin
+                    activeColor={this.state.activeColor}
+                    sidebarMini={this.state.sidebarMini}
+                    handleActiveClick={this.handleActiveClick}
+                    handleMiniClick={this.handleMiniClick}
+                />
             </div>
         );
     }
 }
 
-export default DashboardLayout;
+export default Admin;

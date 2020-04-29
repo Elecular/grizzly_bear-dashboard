@@ -1,24 +1,11 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 import DashboardLayout from "dashboardLayouts/DashboardLayout";
+import login from "auth/login";
+import initializeProject from "utils/initializeProject";
+import AuthorizationContext from "auth/authorizationContext";
 
 import "assets/css/nucleo-icons.css";
 import "react-notification-alert/dist/animate.css";
@@ -27,15 +14,26 @@ import "assets/demo/demo.css";
 
 const hist = createBrowserHistory();
 
-ReactDOM.render(
-    <Router history={hist}>
-        <Switch>
-            <Route
-                path="/dashboard"
-                render={(props) => <DashboardLayout {...props} />}
-            />
-            <Redirect from="/" to="/dashboard/experiments" />
-        </Switch>
-    </Router>,
-    document.getElementById("root"),
-);
+login().then((authToken) => {
+    initializeProject(authToken).then((project) => {
+        ReactDOM.render(
+            <AuthorizationContext.Provider
+                value={{
+                    authToken,
+                    project,
+                }}
+            >
+                <Router history={hist}>
+                    <Switch>
+                        <Route
+                            path="/dashboard"
+                            render={(props) => <DashboardLayout {...props} />}
+                        />
+                        {<Redirect from="/" to="/dashboard/experiments" />}
+                    </Switch>
+                </Router>
+            </AuthorizationContext.Provider>,
+            document.getElementById("root"),
+        );
+    });
+});
