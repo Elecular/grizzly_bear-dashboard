@@ -3,20 +3,21 @@ import ReactWizard from "react-bootstrap-wizard";
 import BasicInfo from "./components/BasicInfo";
 import VariationsInfo from "./components/VariationsInfo";
 import VariablesInfo from "./components/VariablesInfo";
+import strings from "../../localizedStrings/strings";
 
 var steps = [
     {
-        stepName: "Experiment Info",
+        stepName: strings.addExperimentsTab.experimentInfo,
         stepIcon: "tim-icons icon-bullet-list-67",
-        component: BasicInfo,
-    },
-    {
-        stepName: "Variations",
-        stepIcon: "tim-icons icon-chart-bar-32",
         component: VariationsInfo,
     },
     {
-        stepName: "Variables",
+        stepName: strings.addExperimentsTab.variations,
+        stepIcon: "tim-icons icon-chart-bar-32",
+        component: BasicInfo,
+    },
+    {
+        stepName: strings.addExperimentsTab.variables,
         stepIcon: "tim-icons icon-settings-gear-63",
         component: VariablesInfo,
     },
@@ -37,10 +38,16 @@ const AddExperiment = (props) => {
                     headerTextCenter={true}
                     navSteps={true}
                     progressbar={true}
-                    title="New Experiment"
-                    description="Understand user behaviour on a deeper level"
+                    title={strings.addExperimentsTab.title}
+                    description={strings.addExperimentsTab.subTitle}
                     steps={steps}
                     validate={true}
+                    nextButtonText={strings.addExperimentsTab.next}
+                    previousButtonText={strings.addExperimentsTab.previous}
+                    finishButtonText={strings.addExperimentsTab.finish}
+                    nextButtonClasses="btn-wd btn-primary"
+                    previousButtonClasses="btn-wd btn-primary"
+                    finishButtonClasses="btn-wd btn-primary"
                 />
             </div>
         </div>

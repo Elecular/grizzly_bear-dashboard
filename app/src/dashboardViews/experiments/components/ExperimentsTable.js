@@ -5,7 +5,6 @@ import { Table } from "reactstrap";
  * Renders an experiment table
  */
 const ExperimentTable = (props) => {
-    console.log(props);
     return (
         <Table>
             <thead className="text-primary">

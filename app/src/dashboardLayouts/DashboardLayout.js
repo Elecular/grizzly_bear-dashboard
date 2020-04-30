@@ -25,6 +25,7 @@ class DashboardLayout extends React.Component {
             sidebarOpened: false,
         };
         document.body.classList.toggle("sidebar-mini");
+        //document.body.classList.toggle("white-content");
     }
 
     componentDidMount() {

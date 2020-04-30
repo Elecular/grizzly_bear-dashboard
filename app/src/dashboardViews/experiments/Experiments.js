@@ -5,6 +5,7 @@ import { getExperiments } from "../../api/experiments";
 import ExperimentTable from "./components/ExperimentsTable";
 import { Button } from "reactstrap";
 import { Link } from "react-router-dom";
+import strings from "localizedStrings/strings";
 
 const Experiments = (props) => {
     const { authToken, project } = useContext(AuthorizationContext);
@@ -18,13 +19,13 @@ const Experiments = (props) => {
         <div className="content">
             <Card
                 style={{
-                    width: `${experiments.length == 0 ? 40 : 80}rem`,
+                    width: `${experiments.length === 0 ? 40 : 80}rem`,
                     padding: "0.5rem",
                 }}
             >
                 <CardBody>
                     <CardTitle>
-                        <h4>Experiments</h4>
+                        <h4>{strings.tabs.experiments}</h4>
                     </CardTitle>
                     {experiments.length !== 0 ? (
                         <ExperimentTable experiments={experiments} />
@@ -45,8 +46,9 @@ const AddExperiment = (props) => (
                     marginTop: "1.5rem",
                     marginBottom: "1.5rem",
                 }}
+                color="primary"
             >
-                Add Experiment
+                {strings.experimentsTab.addExperiment}
             </Button>
         </Link>
         <CardText
@@ -54,7 +56,7 @@ const AddExperiment = (props) => (
                 marginBottom: "1rem",
             }}
         >
-            You do not have any experiments yet!
+            {strings.experimentsTab.noExperimentsFound}
         </CardText>
     </div>
 );
