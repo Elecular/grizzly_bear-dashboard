@@ -14,8 +14,8 @@ export default {
         subTitle: "Understand user behaviour on a deeper level",
 
         experimentInfo: "Experiment Info",
-        variations: "Variations", //NOTE: This is domain specific vocab.
-        variables: "Variables", //NOTE: This is domain specific vocab
+        variations: "Variations",
+        variables: "Variables",
 
         basicInfoComponent: {
             subTitle:
@@ -32,6 +32,15 @@ export default {
         variationsComponent: {
             subTitle:
                 "Now, let's setup different variations for your experiment",
+            variationName: "Variation Name",
+            trafficPercentage: "Traffic %",
+            addVariation: "Add Variation",
+            controlGroup: "Control Group",
+            variation: "Variation",
+            variationsMustBeUnique: "Variation names must be unique",
+            trafficMustBeValid:
+                "Traffic % must be a positive integer and less than 100%",
+            trafficMustAddTo100: "Total traffic must add up to 100%",
         },
 
         next: "Next",

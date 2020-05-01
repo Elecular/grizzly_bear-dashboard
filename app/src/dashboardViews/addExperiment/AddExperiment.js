@@ -5,25 +5,33 @@ import VariationsInfo from "./components/VariationsInfo";
 import VariablesInfo from "./components/VariablesInfo";
 import strings from "../../localizedStrings/strings";
 
-var steps = [
-    {
-        stepName: strings.addExperimentsTab.experimentInfo,
-        stepIcon: "tim-icons icon-bullet-list-67",
-        component: VariationsInfo,
-    },
-    {
-        stepName: strings.addExperimentsTab.variations,
-        stepIcon: "tim-icons icon-chart-bar-32",
-        component: BasicInfo,
-    },
-    {
-        stepName: strings.addExperimentsTab.variables,
-        stepIcon: "tim-icons icon-settings-gear-63",
-        component: VariablesInfo,
-    },
-];
-
 const AddExperiment = (props) => {
+    const [variations, setVariations] = React.useState([]);
+
+    let steps = [
+        {
+            stepName: strings.addExperimentsTab.experimentInfo,
+            stepIcon: "tim-icons icon-bullet-list-67",
+            component: VariationsInfo,
+            stepProps: {
+                setVariations,
+            },
+        },
+        {
+            stepName: strings.addExperimentsTab.variables,
+            stepIcon: "tim-icons icon-settings-gear-63",
+            component: VariablesInfo,
+            setpProps: {
+                variations,
+            },
+        },
+        {
+            stepName: strings.addExperimentsTab.variations,
+            stepIcon: "tim-icons icon-chart-bar-32",
+            component: BasicInfo,
+        },
+    ];
+
     return (
         <div className="content">
             <div

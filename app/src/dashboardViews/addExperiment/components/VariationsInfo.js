@@ -4,6 +4,7 @@ import { Table, Button, FormGroup, Input, UncontrolledAlert } from "reactstrap";
 import update from "immutability-helper";
 
 const width = "35rem";
+const translations = strings.addExperimentsTab.variationsComponent;
 
 class VariationsInfo extends React.Component {
     constructor(props) {
@@ -11,11 +12,11 @@ class VariationsInfo extends React.Component {
         this.state = {
             variations: [
                 {
-                    name: "Control Group",
+                    name: translations.controlGroup,
                     traffic: 50,
                 },
                 {
-                    name: "Variation 1",
+                    name: `${translations.variation} 1`,
                     traffic: 50,
                 },
             ],
@@ -38,7 +39,6 @@ class VariationsInfo extends React.Component {
                     marginRight: "1.5rem",
                 }}
             >
-                {/*Header*/}
                 <div
                     className="text-center"
                     style={{
@@ -46,9 +46,7 @@ class VariationsInfo extends React.Component {
                         marginBottom: "3.5rem",
                     }}
                 >
-                    <h4>
-                        {strings.addExperimentsTab.variationsComponent.subTitle}
-                    </h4>
+                    <h4>{translations.subTitle}</h4>
                 </div>
                 <Table
                     style={{
@@ -58,8 +56,10 @@ class VariationsInfo extends React.Component {
                 >
                     <thead className="text-primary">
                         <tr>
-                            <th>Variation Name</th>
-                            <th className="text-right">Traffic %</th>
+                            <th>{translations.variationName}</th>
+                            <th className="text-right">
+                                {translations.trafficPercentage}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,12 +75,14 @@ class VariationsInfo extends React.Component {
                                             )
                                         }
                                         editible={
-                                            variation.name !== "Control Group"
+                                            variation.name !==
+                                            translations.controlGroup
                                         }
                                     />
                                 </td>
                                 <td className="text-right">
                                     <EditableCell
+                                        inputFieldWidth="4.5rem"
                                         value={`${variation.traffic}%`}
                                         onValueChange={(value) =>
                                             this.updateVariationTraffic(
@@ -91,7 +93,8 @@ class VariationsInfo extends React.Component {
                                     />
                                 </td>
                                 <td>
-                                    {variation.name !== "Control Group" && (
+                                    {variation.name !==
+                                        translations.controlGroup && (
                                         <Button
                                             className="btn-link btn-icon"
                                             color="danger"
@@ -116,7 +119,7 @@ class VariationsInfo extends React.Component {
                                     }}
                                     onClick={() => this.addVariation()}
                                 >
-                                    Add Variation
+                                    {translations.addVariation}
                                 </Button>
                             </td>
                             <td />
@@ -151,11 +154,11 @@ class VariationsInfo extends React.Component {
             },
         });
         if (!this.areVariationNamesUnique(newState.variations)) {
-            this.addErrorMessage("Variation names must be unique");
+            this.addErrorMessage(translations.variationsMustBeUnique);
             return false;
         } else {
             this.setState(newState);
-            this.removeErrorMessage("Variation names must be unique");
+            this.removeErrorMessage(translations.variationsMustBeUnique);
             return true;
         }
     }
@@ -163,9 +166,7 @@ class VariationsInfo extends React.Component {
     updateVariationTraffic(index, updatedTraffic) {
         const traffic = updatedTraffic.replace("%", "");
         if (isNaN(traffic) || traffic <= 0 || traffic > 100) {
-            this.addErrorMessage(
-                "Traffic % must be a positive integer and less than 100%",
-            );
+            this.addErrorMessage(translations.trafficMustBeValid);
             return false;
         }
         this.setState(
@@ -179,9 +180,7 @@ class VariationsInfo extends React.Component {
                 },
             }),
         );
-        this.removeErrorMessage(
-            "Traffic % must be a positive integer and less than 100%",
-        );
+        this.removeErrorMessage(translations.trafficMustBeValid);
         return true;
     }
 
@@ -192,7 +191,8 @@ class VariationsInfo extends React.Component {
             if (
                 this.state.variations.some(
                     (variation) =>
-                        variation.name === `Variation ${variationCount}`,
+                        variation.name ===
+                        `${translations.variation} ${variationCount}`,
                 )
             ) {
                 variationCount++;
@@ -205,7 +205,7 @@ class VariationsInfo extends React.Component {
                 variations: {
                     $push: [
                         {
-                            name: `Variation ${variationCount}`,
+                            name: `${translations.variation} ${variationCount}`,
                             traffic,
                         },
                     ],
@@ -248,12 +248,17 @@ class VariationsInfo extends React.Component {
 
     isValidated() {
         if (!VariationsInfo.isTotalTrafficValid(this.state.variations)) {
-            this.addErrorMessage("Total traffic must add up to 100%");
+            this.addErrorMessage(translations.trafficMustAddTo100);
             return false;
         } else {
-            this.removeErrorMessage("Total traffic must add up to 100%");
+            this.removeErrorMessage(translations.trafficMustAddTo100);
         }
-        return this.areVariationNamesUnique(this.state.variations);
+        if (this.areVariationNamesUnique(this.state.variations)) {
+            this.props.setVariations(this.state.variations);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     static totalTraffic = (variations) => {
@@ -267,7 +272,7 @@ class VariationsInfo extends React.Component {
 }
 
 const EditableCell = (props) => {
-    const { value, onValueChange, editible = true } = props;
+    const { value, onValueChange, editible = true, inputFieldWidth } = props;
 
     const [edit, setEdit] = React.useState(false);
     const [showEditIcon, setShowEditIcon] = React.useState(false);
@@ -301,6 +306,11 @@ const EditableCell = (props) => {
                                 }
                             }}
                             onBlur={() => setEdit(false)}
+                            style={
+                                inputFieldWidth && {
+                                    width: inputFieldWidth,
+                                }
+                            }
                         />
                     </FormGroup>
                 ) : (
