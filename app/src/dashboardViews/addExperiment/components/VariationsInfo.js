@@ -1,13 +1,6 @@
 import React from "react";
 import strings from "../../../localizedStrings/strings";
-import {
-    Table,
-    Button,
-    FormGroup,
-    Input,
-    Alert,
-    UncontrolledAlert,
-} from "reactstrap";
+import { Table, Button, FormGroup, Input, UncontrolledAlert } from "reactstrap";
 import update from "immutability-helper";
 
 const width = "35rem";
@@ -30,6 +23,7 @@ class VariationsInfo extends React.Component {
         };
         this.updateVariationName.bind(this);
         this.updateVariationTraffic.bind(this);
+        this.addVariation.bind(this);
         this.deleteVariation.bind(this);
         this.addErrorMessage.bind(this);
         this.removeErrorMessage.bind(this);
@@ -80,6 +74,9 @@ class VariationsInfo extends React.Component {
                                                 value.trim(),
                                             )
                                         }
+                                        editible={
+                                            variation.name !== "Control Group"
+                                        }
                                     />
                                 </td>
                                 <td className="text-right">
@@ -94,21 +91,31 @@ class VariationsInfo extends React.Component {
                                     />
                                 </td>
                                 <td>
-                                    <Button
-                                        className="btn-link btn-icon"
-                                        color="danger"
-                                        onClick={() =>
-                                            this.deleteVariation(index)
-                                        }
-                                    >
-                                        <i className="tim-icons icon-trash-simple" />
-                                    </Button>
+                                    {variation.name !== "Control Group" && (
+                                        <Button
+                                            className="btn-link btn-icon"
+                                            color="danger"
+                                            onClick={() =>
+                                                this.deleteVariation(index)
+                                            }
+                                        >
+                                            <i className="tim-icons icon-trash-simple" />
+                                        </Button>
+                                    )}
                                 </td>
                             </tr>
                         ))}
                         <tr>
                             <td>
-                                <Button color="primary" size="sm">
+                                <Button
+                                    color="primary"
+                                    size="sm"
+                                    style={{
+                                        marginTop: "0.5rem",
+                                        marginBottom: "0.5rem",
+                                    }}
+                                    onClick={() => this.addVariation()}
+                                >
                                     Add Variation
                                 </Button>
                             </td>
@@ -155,11 +162,11 @@ class VariationsInfo extends React.Component {
 
     updateVariationTraffic(index, updatedTraffic) {
         const traffic = updatedTraffic.replace("%", "");
-        if (isNaN(traffic)) {
-            this.addErrorMessage("Traffic % must be a valid number");
+        if (isNaN(traffic) || traffic <= 0 || traffic > 100) {
+            this.addErrorMessage(
+                "Traffic % must be a positive integer and less than 100%",
+            );
             return false;
-        } else {
-            this.removeErrorMessage("Traffic % must be a valid number");
         }
         this.setState(
             update(this.state, {
@@ -172,7 +179,39 @@ class VariationsInfo extends React.Component {
                 },
             }),
         );
+        this.removeErrorMessage(
+            "Traffic % must be a positive integer and less than 100%",
+        );
         return true;
+    }
+
+    addVariation() {
+        let variationCount = 1;
+        let traffic = 10;
+        while (true) {
+            if (
+                this.state.variations.some(
+                    (variation) =>
+                        variation.name === `Variation ${variationCount}`,
+                )
+            ) {
+                variationCount++;
+            } else {
+                break;
+            }
+        }
+        this.setState(
+            update(this.state, {
+                variations: {
+                    $push: [
+                        {
+                            name: `Variation ${variationCount}`,
+                            traffic,
+                        },
+                    ],
+                },
+            }),
+        );
     }
 
     deleteVariation(index) {
@@ -207,11 +246,8 @@ class VariationsInfo extends React.Component {
         return true;
     }
 
-    isTotalTrafficValid = (variations) =>
-        variations.reduce((x, y) => x.traffic + y.traffic) === 100;
-
     isValidated() {
-        if (!this.isTotalTrafficValid(this.state.variations)) {
+        if (!VariationsInfo.isTotalTrafficValid(this.state.variations)) {
             this.addErrorMessage("Total traffic must add up to 100%");
             return false;
         } else {
@@ -219,10 +255,19 @@ class VariationsInfo extends React.Component {
         }
         return this.areVariationNamesUnique(this.state.variations);
     }
+
+    static totalTraffic = (variations) => {
+        let totalTraffic = 0;
+        variations.forEach((variation) => (totalTraffic += variation.traffic));
+        return totalTraffic;
+    };
+
+    static isTotalTrafficValid = (variations) =>
+        VariationsInfo.totalTraffic(variations) === 100;
 }
 
 const EditableCell = (props) => {
-    const { value, onValueChange } = props;
+    const { value, onValueChange, editible = true } = props;
 
     const [edit, setEdit] = React.useState(false);
     const [showEditIcon, setShowEditIcon] = React.useState(false);
@@ -240,7 +285,6 @@ const EditableCell = (props) => {
             <div
                 style={{
                     display: "inline-block",
-                    width: "10rem",
                 }}
             >
                 {edit ? (
@@ -252,25 +296,39 @@ const EditableCell = (props) => {
                             onKeyDown={(ev) => {
                                 if (ev.key === "Enter") {
                                     handleValueChange(ev.target.value);
+                                } else if (ev.key == "Escape") {
+                                    setEdit(false);
                                 }
                             }}
                             onBlur={() => setEdit(false)}
                         />
                     </FormGroup>
                 ) : (
-                    <h5>{value}</h5>
+                    <h5 onClick={() => setEdit(editible)}>{value}</h5>
                 )}
             </div>
-            <Button
-                className="btn-link btn-icon"
-                color="primary"
-                onClick={() => setEdit(true)}
-                style={{
-                    visibility: showEditIcon ? "inherit" : "hidden",
-                }}
-            >
-                <i className="tim-icons icon-pencil" />
-            </Button>
+            {!edit && editible && (
+                <Button
+                    className="btn-link btn-icon"
+                    color="primary"
+                    style={{
+                        visibility: showEditIcon ? "inherit" : "hidden",
+                    }}
+                    onClick={() => setEdit(editible)}
+                >
+                    <i className="tim-icons icon-pencil" />
+                </Button>
+            )}
+            {!editible && (
+                <i
+                    className="tim-icons icon-lock-circle"
+                    color="muted"
+                    style={{
+                        marginLeft: "0.5rem",
+                        visibility: showEditIcon ? "inherit" : "hidden",
+                    }}
+                />
+            )}
         </div>
     );
 };
