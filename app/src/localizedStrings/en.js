@@ -15,7 +15,7 @@ export default {
 
         experimentInfo: "Experiment Info",
         variations: "Variations",
-        variables: "Variables",
+        settings: "Variation Settings",
 
         basicInfoComponent: {
             subTitle:
@@ -30,22 +30,32 @@ export default {
             invalidEndDate: "End date has to be after start date",
         },
         variationsComponent: {
-            subTitle:
-                "Now, let's setup different variations for your experiment",
+            subTitle: "Now, let's add different variations for your experiment",
             variationName: "Variation Name",
             trafficPercentage: "Traffic %",
             addVariation: "Add Variation",
-            controlGroup: "Control Group",
-            variation: "Variation",
             variationsMustBeUnique: "Variation names must be unique",
             trafficMustBeValid:
                 "Traffic % must be a positive integer and less than 100%",
             trafficMustAddTo100: "Total traffic must add up to 100%",
+            enterValidVariationName:
+                "Variation names can only contain letters, numbers and spaces",
+        },
+        settingsComponent: {
+            subTitle: "Lastly, we can define your variations through settings",
+            settings: "Settings",
+            addSetting: "Add Setting",
+            enterValidSettingName:
+                "A Setting name can only contain letters,numbers and spaces",
+            enterValidValueName:
+                "A setting can only contain letters, number and spaces",
+            settingNamesMustBeUnique: "Setting names must be unique",
+            allSettingsMustBeDefined: "All Settings must be defined",
         },
 
         next: "Next",
         previous: "Previous",
-        finish: "Finish",
+        finish: "Create",
     },
 
     footer: {

@@ -24,19 +24,38 @@ const login = async () => {
     return authToken;
 };
 
+export const forceLogin = () => {
+    auth0.loginWithRedirect({
+        redirect_uri: window.location.origin,
+    });
+};
+
+/**
+ * Is the token valid for the next n number of hours
+ */
+export const isAuthTokenValid = (token, numberOfHours = 0) => {
+    try {
+        const tokenClaims = JSON.parse(atob(token.split(".")[1]));
+        if (
+            !tokenClaims.exp ||
+            tokenClaims.exp < Date.now() / 1000 + numberOfHours * 3600
+        )
+            return false;
+        return true;
+    } catch (err) {
+        return false;
+    }
+};
+
 const setTokenInLocalStorage = (token) => {
-    console.log(token);
     localStorage.setItem("authToken", token);
 };
 
 const getTokenFromLocalStorage = () => {
     try {
         const authToken = localStorage.getItem("authToken");
-        const tokenClaims = JSON.parse(atob(authToken.split(".")[1]));
         //If experiation date does not exist or the token is going to expire within 6 hours, we want to treat this is an invalid token.
-        if (!tokenClaims.exp || tokenClaims.exp < Date.now() / 1000 + 6 * 3600)
-            return undefined;
-        return authToken;
+        return isAuthTokenValid(authToken, 6) ? authToken : undefined;
     } catch (err) {
         return undefined;
     }

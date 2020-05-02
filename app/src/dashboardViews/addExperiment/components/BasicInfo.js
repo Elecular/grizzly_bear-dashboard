@@ -51,143 +51,132 @@ class BasicInfo extends React.Component {
                     </h4>
                 </div>
 
-                <form>
-                    {/*Experiment Name*/}
-                    <Label for="experimentName">
-                        {
-                            strings.addExperimentsTab.basicInfoComponent
-                                .experimentName
+                {/*Experiment Name*/}
+                <Label for="experimentName">
+                    {
+                        strings.addExperimentsTab.basicInfoComponent
+                            .experimentName
+                    }
+                </Label>
+                <FormGroup
+                    style={{
+                        marginBottom: "2rem",
+                    }}
+                >
+                    <Input
+                        type="text"
+                        id="experimentName"
+                        value={experimentName}
+                        onChange={(ev) =>
+                            this.setState({
+                                experimentName: ev.target.value,
+                            })
                         }
-                    </Label>
-                    <FormGroup
-                        style={{
-                            marginBottom: "2rem",
-                        }}
-                    >
+                    />
+                    {invalidExperimentName && (
+                        <FormText color="danger">
+                            {invalidExperimentName}
+                        </FormText>
+                    )}
+                </FormGroup>
+
+                {/*Scheduling Experiment Radio Buttons*/}
+                <FormGroup check className="form-check-radio form-check-inline">
+                    <Label className="form-check-label">
                         <Input
-                            type="text"
-                            id="experimentName"
-                            value={experimentName}
-                            onChange={(ev) =>
+                            type="radio"
+                            name="scheduleExperiment"
+                            id="scheduleExperiment-false"
+                            value="false"
+                            defaultChecked
+                            onClick={() =>
                                 this.setState({
-                                    experimentName: ev.target.value,
+                                    scheduleExperiments: false,
                                 })
                             }
                         />
-                        {invalidExperimentName && (
-                            <FormText color="danger">
-                                {invalidExperimentName}
-                            </FormText>
-                        )}
-                    </FormGroup>
-
-                    {/*Scheduling Experiment Radio Buttons*/}
-                    <FormGroup
-                        check
-                        className="form-check-radio form-check-inline"
-                    >
-                        <Label className="form-check-label">
-                            <Input
-                                type="radio"
-                                name="scheduleExperiment"
-                                id="scheduleExperiment-false"
-                                value="false"
-                                defaultChecked
-                                onClick={() =>
-                                    this.setState({
-                                        scheduleExperiments: false,
-                                    })
-                                }
-                            />
-                            {
-                                strings.addExperimentsTab.basicInfoComponent
-                                    .startExperimentNow
+                        {
+                            strings.addExperimentsTab.basicInfoComponent
+                                .startExperimentNow
+                        }
+                        <span className="form-check-sign"></span>
+                    </Label>
+                </FormGroup>
+                <FormGroup check className="form-check-radio form-check-inline">
+                    <Label className="form-check-label">
+                        <Input
+                            type="radio"
+                            name="scheduleExperiment"
+                            id="scheduleExperiment-true"
+                            value="true"
+                            onClick={() =>
+                                this.setState({ scheduleExperiments: true })
                             }
-                            <span className="form-check-sign"></span>
-                        </Label>
-                    </FormGroup>
-                    <FormGroup
-                        check
-                        className="form-check-radio form-check-inline"
-                    >
-                        <Label className="form-check-label">
-                            <Input
-                                type="radio"
-                                name="scheduleExperiment"
-                                id="scheduleExperiment-true"
-                                value="true"
-                                onClick={() =>
-                                    this.setState({ scheduleExperiments: true })
-                                }
-                            />
-                            {
-                                strings.addExperimentsTab.basicInfoComponent
-                                    .scheduleExperiment
-                            }
-                            <span className="form-check-sign"></span>
-                        </Label>
-                    </FormGroup>
+                        />
+                        {
+                            strings.addExperimentsTab.basicInfoComponent
+                                .scheduleExperiment
+                        }
+                        <span className="form-check-sign"></span>
+                    </Label>
+                </FormGroup>
 
-                    {/*Scheduling Experiments Input Field*/}
-                    {scheduleExperiments && (
-                        <Row
-                            style={{
-                                marginTop: "1rem",
-                            }}
-                        >
-                            <Col>
-                                <FormGroup>
-                                    <Label for="startDate">
-                                        {
-                                            strings.addExperimentsTab
-                                                .basicInfoComponent.startDate
-                                        }
-                                    </Label>
-                                    <Datetime
-                                        id="startDate"
-                                        value={new Date(startTime)}
-                                        onChange={(date) => {
-                                            const time =
-                                                this.processDate(date) ||
-                                                startTime;
-                                            this.setState({ startTime: time });
-                                        }}
-                                    />
-                                    {invalidStartTime && (
-                                        <FormText color="danger">
-                                            {invalidStartTime}
-                                        </FormText>
-                                    )}
-                                </FormGroup>
-                            </Col>
-                            <Col>
-                                <FormGroup>
-                                    <Label for="endDate">
-                                        {
-                                            strings.addExperimentsTab
-                                                .basicInfoComponent.endDate
-                                        }
-                                    </Label>
-                                    <Datetime
-                                        id="endDate"
-                                        value={
-                                            endTime ? new Date(endTime) : null
-                                        }
-                                        onChange={(date) => {
-                                            const time = this.processDate(date);
-                                            this.setState({ endTime: time });
-                                        }}
-                                    />
-                                    {invalidEndTime && (
-                                        <FormText color="danger">
-                                            {invalidEndTime}
-                                        </FormText>
-                                    )}
-                                </FormGroup>
-                            </Col>
-                        </Row>
-                    )}
-                </form>
+                {/*Scheduling Experiments Input Field*/}
+                {scheduleExperiments && (
+                    <Row
+                        style={{
+                            marginTop: "1rem",
+                        }}
+                    >
+                        <Col>
+                            <FormGroup>
+                                <Label for="startDate">
+                                    {
+                                        strings.addExperimentsTab
+                                            .basicInfoComponent.startDate
+                                    }
+                                </Label>
+                                <Datetime
+                                    id="startDate"
+                                    value={new Date(startTime)}
+                                    onChange={(date) => {
+                                        const time =
+                                            this.processDate(date) || startTime;
+                                        this.setState({ startTime: time });
+                                    }}
+                                />
+                                {invalidStartTime && (
+                                    <FormText color="danger">
+                                        {invalidStartTime}
+                                    </FormText>
+                                )}
+                            </FormGroup>
+                        </Col>
+                        <Col>
+                            <FormGroup>
+                                <Label for="endDate">
+                                    {
+                                        strings.addExperimentsTab
+                                            .basicInfoComponent.endDate
+                                    }
+                                </Label>
+                                <Datetime
+                                    id="endDate"
+                                    value={endTime ? new Date(endTime) : null}
+                                    onChange={(date) => {
+                                        const time = this.processDate(date);
+                                        this.setState({ endTime: time });
+                                    }}
+                                />
+                                {invalidEndTime && (
+                                    <FormText color="danger">
+                                        {invalidEndTime}
+                                    </FormText>
+                                )}
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                )}
             </div>
         );
     }
@@ -229,7 +218,12 @@ class BasicInfo extends React.Component {
             },
         });
 
-        return isExperimentNameValid && isValidTimeRange;
+        const isValid = isExperimentNameValid && isValidTimeRange;
+        if (!isValid) {
+            return false;
+        }
+        this.props.setExperimentInfo(this.state);
+        return true;
     }
 
     processDate(date) {

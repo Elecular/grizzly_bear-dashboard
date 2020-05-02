@@ -35,9 +35,24 @@ export const addProjectIfOneDoesNotExist = async (projectName, authToken) => {
  * @param {string} projectId
  * @returns {Promise<Array<Object>>}
  */
-export const getExperiments = async (authToken, projectId) => {
+export const getExperiments = async (projectId, authToken) => {
     return await get(
         `${experimentsUri}/projects/${projectId}/experiments`,
+        authToken,
+    );
+};
+
+/**
+ * Adds experiment to the given project id
+ * @param {string} projectId
+ * @param {Object} experiment
+ * @param {string} authToken
+ * @returns {Promise<Array<Object>>}
+ */
+export const addExperiment = async (projectId, experiment, authToken) => {
+    return await post(
+        `${experimentsUri}/projects/${projectId}/experiments`,
+        experiment,
         authToken,
     );
 };

@@ -1,9 +1,12 @@
 import React from "react";
 import strings from "../../../localizedStrings/strings";
-import { Table, Button, FormGroup, Input, UncontrolledAlert } from "reactstrap";
+import { Table, Button, UncontrolledAlert } from "reactstrap";
 import update from "immutability-helper";
+import EditableCell from "./EditableCell";
 
 const width = "35rem";
+const controlGoupName = "Control Group";
+const variationName = "Variation";
 const translations = strings.addExperimentsTab.variationsComponent;
 
 class VariationsInfo extends React.Component {
@@ -12,12 +15,14 @@ class VariationsInfo extends React.Component {
         this.state = {
             variations: [
                 {
-                    name: translations.controlGroup,
+                    name: controlGoupName,
                     traffic: 50,
+                    controlGroup: true,
                 },
                 {
-                    name: `${translations.variation} 1`,
+                    name: `${variationName} 1`,
                     traffic: 50,
+                    controlGroup: false,
                 },
             ],
             errors: [],
@@ -57,7 +62,7 @@ class VariationsInfo extends React.Component {
                     <thead className="text-primary">
                         <tr>
                             <th>{translations.variationName}</th>
-                            <th className="text-right">
+                            <th className="text-left">
                                 {translations.trafficPercentage}
                             </th>
                         </tr>
@@ -75,14 +80,13 @@ class VariationsInfo extends React.Component {
                                             )
                                         }
                                         editible={
-                                            variation.name !==
-                                            translations.controlGroup
+                                            variation.name !== controlGoupName
                                         }
                                     />
                                 </td>
-                                <td className="text-right">
+                                <td className="text-left">
                                     <EditableCell
-                                        inputFieldWidth="4.5rem"
+                                        cellWidth="4.5rem"
                                         value={`${variation.traffic}%`}
                                         onValueChange={(value) =>
                                             this.updateVariationTraffic(
@@ -93,8 +97,7 @@ class VariationsInfo extends React.Component {
                                     />
                                 </td>
                                 <td>
-                                    {variation.name !==
-                                        translations.controlGroup && (
+                                    {variation.name !== controlGoupName && (
                                         <Button
                                             className="btn-link btn-icon"
                                             color="danger"
@@ -144,6 +147,10 @@ class VariationsInfo extends React.Component {
     }
 
     updateVariationName(index, updatedName) {
+        if (updatedName === "" || !updatedName.match(/^[a-zA-Z0-9 ]*$/)) {
+            this.addErrorMessage(translations.enterValidVariationName);
+            return false;
+        }
         const newState = update(this.state, {
             variations: {
                 [index]: {
@@ -156,11 +163,14 @@ class VariationsInfo extends React.Component {
         if (!this.areVariationNamesUnique(newState.variations)) {
             this.addErrorMessage(translations.variationsMustBeUnique);
             return false;
-        } else {
-            this.setState(newState);
-            this.removeErrorMessage(translations.variationsMustBeUnique);
-            return true;
         }
+
+        this.setState(newState);
+        this.removeErrorMessage(
+            translations.enterValidVariationName,
+            translations.variationsMustBeUnique,
+        );
+        return true;
     }
 
     updateVariationTraffic(index, updatedTraffic) {
@@ -186,13 +196,11 @@ class VariationsInfo extends React.Component {
 
     addVariation() {
         let variationCount = 1;
-        let traffic = 10;
         while (true) {
             if (
                 this.state.variations.some(
                     (variation) =>
-                        variation.name ===
-                        `${translations.variation} ${variationCount}`,
+                        variation.name === `${variationName} ${variationCount}`,
                 )
             ) {
                 variationCount++;
@@ -205,8 +213,9 @@ class VariationsInfo extends React.Component {
                 variations: {
                     $push: [
                         {
-                            name: `${translations.variation} ${variationCount}`,
-                            traffic,
+                            name: `${variationName} ${variationCount}`,
+                            traffic: 0,
+                            controlGroup: false,
                         },
                     ],
                 },
@@ -231,9 +240,11 @@ class VariationsInfo extends React.Component {
         );
     }
 
-    removeErrorMessage(errorMessage) {
+    removeErrorMessage(...errorMessages) {
         this.setState({
-            errors: this.state.errors.filter((error) => error !== errorMessage),
+            errors: this.state.errors.filter(
+                (error) => !errorMessages.includes(error),
+            ),
         });
     }
 
@@ -250,15 +261,16 @@ class VariationsInfo extends React.Component {
         if (!VariationsInfo.isTotalTrafficValid(this.state.variations)) {
             this.addErrorMessage(translations.trafficMustAddTo100);
             return false;
-        } else {
-            this.removeErrorMessage(translations.trafficMustAddTo100);
         }
-        if (this.areVariationNamesUnique(this.state.variations)) {
-            this.props.setVariations(this.state.variations);
-            return true;
-        } else {
+        if (!this.areVariationNamesUnique(this.state.variations)) {
             return false;
         }
+        this.removeErrorMessage(
+            translations.trafficMustAddTo100,
+            translations.variationsMustBeUnique,
+        );
+        this.props.setVariations(this.state.variations);
+        return true;
     }
 
     static totalTraffic = (variations) => {
@@ -270,77 +282,5 @@ class VariationsInfo extends React.Component {
     static isTotalTrafficValid = (variations) =>
         VariationsInfo.totalTraffic(variations) === 100;
 }
-
-const EditableCell = (props) => {
-    const { value, onValueChange, editible = true, inputFieldWidth } = props;
-
-    const [edit, setEdit] = React.useState(false);
-    const [showEditIcon, setShowEditIcon] = React.useState(false);
-
-    const handleValueChange = (val) => {
-        if (!onValueChange(val)) return;
-        setEdit(false);
-    };
-
-    return (
-        <div
-            onMouseEnter={() => setShowEditIcon(true)}
-            onMouseLeave={() => setShowEditIcon(false)}
-        >
-            <div
-                style={{
-                    display: "inline-block",
-                }}
-            >
-                {edit ? (
-                    <FormGroup>
-                        <Input
-                            type="text"
-                            autoFocus
-                            defaultValue={value}
-                            onKeyDown={(ev) => {
-                                if (ev.key === "Enter") {
-                                    handleValueChange(ev.target.value);
-                                } else if (ev.key == "Escape") {
-                                    setEdit(false);
-                                }
-                            }}
-                            onBlur={() => setEdit(false)}
-                            style={
-                                inputFieldWidth && {
-                                    width: inputFieldWidth,
-                                }
-                            }
-                        />
-                    </FormGroup>
-                ) : (
-                    <h5 onClick={() => setEdit(editible)}>{value}</h5>
-                )}
-            </div>
-            {!edit && editible && (
-                <Button
-                    className="btn-link btn-icon"
-                    color="primary"
-                    style={{
-                        visibility: showEditIcon ? "inherit" : "hidden",
-                    }}
-                    onClick={() => setEdit(editible)}
-                >
-                    <i className="tim-icons icon-pencil" />
-                </Button>
-            )}
-            {!editible && (
-                <i
-                    className="tim-icons icon-lock-circle"
-                    color="muted"
-                    style={{
-                        marginLeft: "0.5rem",
-                        visibility: showEditIcon ? "inherit" : "hidden",
-                    }}
-                />
-            )}
-        </div>
-    );
-};
 
 export default VariationsInfo;

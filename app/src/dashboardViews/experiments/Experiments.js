@@ -12,7 +12,7 @@ const Experiments = (props) => {
     const [experiments, setExperiments] = useState([]);
 
     React.useEffect(() => {
-        getExperiments(authToken, project._id).then(setExperiments);
+        getExperiments(project._id, authToken).then(setExperiments);
     }, [authToken, project._id]);
 
     return (
