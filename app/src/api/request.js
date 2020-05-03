@@ -15,7 +15,7 @@ export const get = async (url, authToken = undefined) => {
         throw {
             httpError: true,
             status: res.status,
-            message: res.text(),
+            message: await res.text(),
         };
     }
     return await res.json();
@@ -39,7 +39,7 @@ export const post = async (url, data, authToken = undefined) => {
         throw {
             httpError: true,
             status: res.status,
-            message: res.text(),
+            message: await res.text(),
         };
     }
     return await res.json();

@@ -2,14 +2,7 @@ import React from "react";
 import strings from "../../../localizedStrings/strings";
 import EditableCell from "./EditableCell";
 import update from "immutability-helper";
-import {
-    Table,
-    Button,
-    UncontrolledAlert,
-    FormGroup,
-    Label,
-    Input,
-} from "reactstrap";
+import { Table, Button, UncontrolledAlert } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
 
 const exampleColors = [
@@ -57,7 +50,7 @@ class VariationSettings extends React.Component {
 
     render() {
         const { variations } = this.props;
-        const { variables, values } = this.state;
+        const { variables, values, errors } = this.state;
         return (
             <div
                 id="variationSettingsTable"
@@ -84,7 +77,10 @@ class VariationSettings extends React.Component {
                             </th>
                             {variations &&
                                 variations.map((variation) => (
-                                    <th className="text-left">
+                                    <th
+                                        key={variation.name}
+                                        className="text-left"
+                                    >
                                         {variation.name}
                                     </th>
                                 ))}
@@ -92,7 +88,7 @@ class VariationSettings extends React.Component {
                     </thead>
                     <tbody>
                         {variables.map((variable, variableIndex) => (
-                            <tr>
+                            <tr key={variable.name}>
                                 <td className="text-left">
                                     <div>
                                         <EditableCell
@@ -119,7 +115,10 @@ class VariationSettings extends React.Component {
                                             ];
                                     }
                                     return (
-                                        <td className="text-left">
+                                        <td
+                                            key={variation.name}
+                                            className="text-left"
+                                        >
                                             <EditableCell
                                                 value={value}
                                                 editible={true}
@@ -161,19 +160,22 @@ class VariationSettings extends React.Component {
                                     {translations.addSetting}
                                 </Button>
                             </td>
-                            {variations.map(() => (
-                                <td />
+                            {variations.map((variation) => (
+                                <td key={variation.name} />
                             ))}
                             <td />
                         </tr>
                     </tbody>
                 </Table>
-                {this.state.errors.map((error) => (
+                {errors.map((error) => (
                     <UncontrolledAlert
                         key={error}
                         color="danger"
                         onClick={() => {
                             this.removeErrorMessage(error);
+                        }}
+                        style={{
+                            marginBottom: "1rem",
                         }}
                     >
                         {error}
@@ -209,7 +211,7 @@ class VariationSettings extends React.Component {
                 },
             },
         });
-        if (!VariationSettings.areVariableNamesUnique(newState.variables)) {
+        if (!areVariableNamesUnique(newState.variables)) {
             this.addErrorMessage(translations.settingNamesMustBeUnique);
             return false;
         }
@@ -223,7 +225,7 @@ class VariationSettings extends React.Component {
     };
 
     updateValue(variableIndex, variationIndex, value) {
-        if (value === "" || !value.match(/^[a-zA-Z0-9 ]*$/)) {
+        if (value === "") {
             this.addErrorMessage(translations.enterValidValueName);
             return false;
         }
@@ -242,19 +244,19 @@ class VariationSettings extends React.Component {
     }
 
     deleteVariable(variableIndex) {
+        const { variables, values } = this.state;
         this.setState({
-            variables: this.state.variables.filter(
-                (_, i) => i !== variableIndex,
-            ),
-            values: this.state.values.filter((_, i) => i !== variableIndex),
+            variables: variables.filter((_, i) => i !== variableIndex),
+            values: values.filter((_, i) => i !== variableIndex),
         });
     }
 
     addVariable() {
+        const { variables } = this.state;
         let settingCount = 1;
         while (true) {
             if (
-                this.state.variables.some(
+                variables.some(
                     (variable) =>
                         variable.name === `${variableName} ${settingCount}`,
                 )
@@ -282,7 +284,8 @@ class VariationSettings extends React.Component {
     }
 
     addErrorMessage(errorMessage) {
-        if (this.state.errors.includes(errorMessage)) return;
+        const { errors } = this.state;
+        if (errors.includes(errorMessage)) return;
         this.setState(
             update(this.state, {
                 errors: {
@@ -293,25 +296,26 @@ class VariationSettings extends React.Component {
     }
 
     removeErrorMessage(...errorMessages) {
+        const { errors } = this.state;
         this.setState({
-            errors: this.state.errors.filter(
-                (error) => !errorMessages.includes(error),
-            ),
+            errors: errors.filter((error) => !errorMessages.includes(error)),
         });
     }
 
     areAllValuesValid() {
+        const { variables, values } = this.state;
+        const { variations } = this.props;
         for (
             let variableIndex = 0;
-            variableIndex < this.state.variables.length;
+            variableIndex < variables.length;
             variableIndex++
         ) {
             for (
                 let variationIndex = 0;
-                variationIndex < this.props.variations.length;
+                variationIndex < variations.length;
                 variationIndex++
             ) {
-                const value = this.state.values[variableIndex][variationIndex];
+                const value = values[variableIndex][variationIndex];
                 if (!value) {
                     return false;
                 }
@@ -320,22 +324,13 @@ class VariationSettings extends React.Component {
         return true;
     }
 
-    static areVariableNamesUnique(variables) {
-        let names = {};
-        for (let variable of variables) {
-            if (names[variable.name]) return false;
-            names[variable.name] = true;
-        }
-        return true;
-    }
-
     isValidated() {
+        const { variables } = this.state;
+        const { setVariationSettings } = this.props;
         if (!this.areAllValuesValid()) {
             this.addErrorMessage(translations.allSettingsMustBeDefined);
             return false;
-        } else if (
-            !VariationSettings.areVariableNamesUnique(this.state.variables)
-        ) {
+        } else if (!areVariableNamesUnique(variables)) {
             this.addErrorMessage(translations.settingNamesMustBeUnique);
             return false;
         }
@@ -343,9 +338,18 @@ class VariationSettings extends React.Component {
             translations.allSettingsMustBeDefined,
             translations.settingNamesMustBeUnique,
         );
-        this.props.setVariationSettings(this.state);
+        setVariationSettings(this.state);
         return true;
     }
 }
+
+const areVariableNamesUnique = (variables) => {
+    let names = {};
+    for (let variable of variables) {
+        if (names[variable.name]) return false;
+        names[variable.name] = true;
+    }
+    return true;
+};
 
 export default VariationSettings;

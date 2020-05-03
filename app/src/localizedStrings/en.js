@@ -17,6 +17,15 @@ export default {
         variations: "Variations",
         settings: "Variation Settings",
 
+        experimentAlreadyExists:
+            "An experiment with the given name already exists. Please try again with another name.",
+        errorOnOurSide:
+            "There seems to be a problem on our side. Please refresh the page and try again. If the problem persists, contact our helpline.",
+
+        experimentIsCreated: "The experiment is created",
+        close: "Close",
+        showMe: "Show Me!",
+
         basicInfoComponent: {
             subTitle:
                 "Let's start with some basic information about your experiment",
@@ -47,8 +56,7 @@ export default {
             addSetting: "Add Setting",
             enterValidSettingName:
                 "A Setting name can only contain letters,numbers and spaces",
-            enterValidValueName:
-                "A setting can only contain letters, number and spaces",
+            enterValidValueName: "A setting cannot be empty",
             settingNamesMustBeUnique: "Setting names must be unique",
             allSettingsMustBeDefined: "All Settings must be defined",
         },

@@ -15,6 +15,10 @@ class BasicInfo extends React.Component {
             endTime: undefined,
             errors: {},
         };
+
+        this.updateExperimentName.bind(this);
+        this.updateStartTime.bind(this);
+        this.updateEndTime.bind(this);
     }
 
     render() {
@@ -68,9 +72,7 @@ class BasicInfo extends React.Component {
                         id="experimentName"
                         value={experimentName}
                         onChange={(ev) =>
-                            this.setState({
-                                experimentName: ev.target.value,
-                            })
+                            this.updateExperimentName(ev.target.value)
                         }
                     />
                     {invalidExperimentName && (
@@ -139,11 +141,9 @@ class BasicInfo extends React.Component {
                                 <Datetime
                                     id="startDate"
                                     value={new Date(startTime)}
-                                    onChange={(date) => {
-                                        const time =
-                                            this.processDate(date) || startTime;
-                                        this.setState({ startTime: time });
-                                    }}
+                                    onChange={(date) =>
+                                        this.updateStartTime(date)
+                                    }
                                 />
                                 {invalidStartTime && (
                                     <FormText color="danger">
@@ -163,10 +163,9 @@ class BasicInfo extends React.Component {
                                 <Datetime
                                     id="endDate"
                                     value={endTime ? new Date(endTime) : null}
-                                    onChange={(date) => {
-                                        const time = this.processDate(date);
-                                        this.setState({ endTime: time });
-                                    }}
+                                    onChange={(date) =>
+                                        this.updateEndTime(date)
+                                    }
                                 />
                                 {invalidEndTime && (
                                     <FormText color="danger">
@@ -181,6 +180,22 @@ class BasicInfo extends React.Component {
         );
     }
 
+    updateExperimentName(experimentName) {
+        this.setState({
+            experimentName: experimentName,
+        });
+    }
+
+    updateStartTime(date) {
+        const time = this.processDate(date) || this.state.startTime;
+        this.setState({ startTime: time });
+    }
+
+    updateEndTime(date) {
+        const time = this.processDate(date);
+        this.setState({ endTime: time });
+    }
+
     isValidated() {
         const {
             startTime,
@@ -188,6 +203,7 @@ class BasicInfo extends React.Component {
             experimentName,
             scheduleExperiments,
         } = this.state;
+        const { setExperimentInfo } = this.props;
 
         const isStartTimeValid =
             typeof startTime === "number" && startTime > Date.now();
@@ -222,7 +238,7 @@ class BasicInfo extends React.Component {
         if (!isValid) {
             return false;
         }
-        this.props.setExperimentInfo(this.state);
+        setExperimentInfo(this.state);
         return true;
     }
 

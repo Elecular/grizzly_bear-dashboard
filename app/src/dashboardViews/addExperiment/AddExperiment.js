@@ -21,7 +21,7 @@ const AddExperiment = (props) => {
     const [openModal, setOpenModal] = React.useState(false);
     const [error, setError] = React.useState(undefined);
 
-    //Is authentication token valid for the next two hours
+    //Is authentication token is not valid for the next two hours
     if (!project || !isAuthTokenValid(authToken, 2)) {
         alert("You session is about to expire. Please relogin");
         forceLogin(true);
@@ -64,24 +64,21 @@ const AddExperiment = (props) => {
             variationSettings,
             project,
         );
+        console.log(experiment);
         setLoading(true);
         setOpenModal(true);
-
+        console.log(experiment);
         addExperiment(project._id, experiment, authToken)
             .then((addedExperiment) => {
                 setLoading(false);
             })
             .catch((err) => {
-                setError(
-                    "There seems to be a problem on our side. Please refresh and try again. If the problem persists, contact our helpline.",
-                );
+                setError(strings.addExperimentsTab.errorOnOurSide);
                 if (err.httpError) {
-                    switch (err.status) {
-                        case 409:
-                            setError(
-                                "An experiment with the given name already exists. Please try again with another name.",
-                            );
-                            break;
+                    if (err.status === 409) {
+                        setError(
+                            strings.addExperimentsTab.experimentAlreadyExists,
+                        );
                     }
                 }
                 setLoading(false);
@@ -159,10 +156,14 @@ const FeedbackModal = (props) => {
                                 marginBottom: "2rem",
                             }}
                         >
-                            {error ? error : "The experiment was created"}
+                            {error
+                                ? error
+                                : strings.addExperimentsTab.experimentIsCreated}
                         </p>
                         <Button color={error ? "danger" : "success"} size="sm">
-                            {error ? "Close" : "Show me!"}
+                            {error
+                                ? strings.addExperimentsTab.close
+                                : strings.addExperimentsTab.showMe}
                         </Button>
                     </>
                 )}
@@ -181,8 +182,12 @@ const constructExperimentBody = (
         projectId: project._id,
         experimentName: experimentInfo.experimentName,
     },
-    startTime: experimentInfo.startTime,
-    endTime: experimentInfo.endTime,
+    startTime: experimentInfo.scheduleExperiments
+        ? experimentInfo.startTime
+        : undefined,
+    endTime: experimentInfo.scheduleExperiments
+        ? experimentInfo.endTime
+        : undefined,
     variations: variations.map((variation, variationIndex) => ({
         variationName: variation.name,
         normalizedTrafficAmount: new Decimal(variation.traffic)

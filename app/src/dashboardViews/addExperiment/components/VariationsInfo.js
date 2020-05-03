@@ -3,6 +3,8 @@ import strings from "../../../localizedStrings/strings";
 import { Table, Button, UncontrolledAlert } from "reactstrap";
 import update from "immutability-helper";
 import EditableCell from "./EditableCell";
+import { isValidAlphaNumericString } from "../../../utils/strings";
+import { UncontrolledTooltip } from "reactstrap";
 
 const width = "35rem";
 const controlGoupName = "Control Group";
@@ -36,7 +38,7 @@ class VariationsInfo extends React.Component {
     }
 
     render() {
-        const { variations } = this.state;
+        const { variations, errors } = this.state;
         return (
             <div
                 style={{
@@ -79,9 +81,7 @@ class VariationsInfo extends React.Component {
                                                 value.trim(),
                                             )
                                         }
-                                        editible={
-                                            variation.name !== controlGoupName
-                                        }
+                                        editible={!isControlGroup(variation)}
                                     />
                                 </td>
                                 <td className="text-left">
@@ -97,7 +97,7 @@ class VariationsInfo extends React.Component {
                                     />
                                 </td>
                                 <td>
-                                    {variation.name !== controlGoupName && (
+                                    {!isControlGroup(variation) && (
                                         <Button
                                             className="btn-link btn-icon"
                                             color="danger"
@@ -130,10 +130,14 @@ class VariationsInfo extends React.Component {
                         </tr>
                     </tbody>
                 </Table>
-                {this.state.errors.map((error) => (
+                {errors.map((error) => (
                     <UncontrolledAlert
                         key={error}
-                        style={{ width, margin: "auto" }}
+                        style={{
+                            width,
+                            margin: "auto",
+                            marginBottom: "1rem",
+                        }}
                         color="danger"
                         onClick={() => {
                             this.removeErrorMessage(error);
@@ -147,7 +151,7 @@ class VariationsInfo extends React.Component {
     }
 
     updateVariationName(index, updatedName) {
-        if (updatedName === "" || !updatedName.match(/^[a-zA-Z0-9 ]*$/)) {
+        if (!isValidAlphaNumericString(updatedName)) {
             this.addErrorMessage(translations.enterValidVariationName);
             return false;
         }
@@ -195,10 +199,12 @@ class VariationsInfo extends React.Component {
     }
 
     addVariation() {
+        const { variations } = this.state;
+        //variation count is simply used for giving a unique name to the newly added variation
         let variationCount = 1;
         while (true) {
             if (
-                this.state.variations.some(
+                variations.some(
                     (variation) =>
                         variation.name === `${variationName} ${variationCount}`,
                 )
@@ -208,13 +214,14 @@ class VariationsInfo extends React.Component {
                 break;
             }
         }
+
         this.setState(
             update(this.state, {
                 variations: {
                     $push: [
                         {
                             name: `${variationName} ${variationCount}`,
-                            traffic: 0,
+                            traffic: 10,
                             controlGroup: false,
                         },
                     ],
@@ -224,13 +231,15 @@ class VariationsInfo extends React.Component {
     }
 
     deleteVariation(index) {
+        const { variations } = this.state;
         this.setState({
-            variations: this.state.variations.filter((_, i) => i !== index),
+            variations: variations.filter((_, i) => i !== index),
         });
     }
 
     addErrorMessage(errorMessage) {
-        if (this.state.errors.includes(errorMessage)) return;
+        const { errors } = this.state;
+        if (errors.includes(errorMessage)) return;
         this.setState(
             update(this.state, {
                 errors: {
@@ -241,10 +250,9 @@ class VariationsInfo extends React.Component {
     }
 
     removeErrorMessage(...errorMessages) {
+        const { errors } = this.state;
         this.setState({
-            errors: this.state.errors.filter(
-                (error) => !errorMessages.includes(error),
-            ),
+            errors: errors.filter((error) => !errorMessages.includes(error)),
         });
     }
 
@@ -258,29 +266,33 @@ class VariationsInfo extends React.Component {
     }
 
     isValidated() {
-        if (!VariationsInfo.isTotalTrafficValid(this.state.variations)) {
+        const { variations } = this.state;
+        const { setVariations } = this.props;
+        if (!isTotalTrafficValid(variations)) {
             this.addErrorMessage(translations.trafficMustAddTo100);
             return false;
         }
-        if (!this.areVariationNamesUnique(this.state.variations)) {
+        if (!this.areVariationNamesUnique(variations)) {
+            this.addErrorMessage(translations.variationsMustBeUnique);
             return false;
         }
         this.removeErrorMessage(
             translations.trafficMustAddTo100,
             translations.variationsMustBeUnique,
         );
-        this.props.setVariations(this.state.variations);
+        setVariations(variations);
         return true;
     }
-
-    static totalTraffic = (variations) => {
-        let totalTraffic = 0;
-        variations.forEach((variation) => (totalTraffic += variation.traffic));
-        return totalTraffic;
-    };
-
-    static isTotalTrafficValid = (variations) =>
-        VariationsInfo.totalTraffic(variations) === 100;
 }
+
+const isControlGroup = (variation) => variation.controlGroup;
+
+const isTotalTrafficValid = (variations) => totalTraffic(variations) === 100;
+
+const totalTraffic = (variations) => {
+    let totalTraffic = 0;
+    variations.forEach((variation) => (totalTraffic += variation.traffic));
+    return totalTraffic;
+};
 
 export default VariationsInfo;
