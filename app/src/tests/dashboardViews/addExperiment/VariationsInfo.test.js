@@ -43,13 +43,7 @@ it("Can add a new variation and update traffic", async () => {
     expect(screen.getByText("Variation 2")).toBeInTheDocument();
 
     //Editing traffic to make ot equal to 100%
-    fireEvent.click(screen.getByTestId("text-Variation 1-traffic"));
-    fireEvent.change(screen.getByTestId("input-Variation 1-traffic"), {
-        target: { value: 40 },
-    });
-    fireEvent.keyDown(screen.getByTestId("input-Variation 1-traffic"), {
-        key: "Enter",
-    });
+    setTraffic("Variation 1", 40);
 
     fireEvent.click(screen.getByText(strings.addExperimentsTab.next));
 
@@ -90,14 +84,7 @@ it("Can edit variation name", async () => {
     skipFirstStep();
     mockCallback.mockClear();
 
-    fireEvent.click(screen.getByTestId("text-Variation 1"));
-    fireEvent.change(screen.getByTestId("input-Variation 1"), {
-        target: { value: "Variation edited name" },
-    });
-    fireEvent.keyDown(screen.getByTestId("input-Variation 1"), {
-        key: "Enter",
-        code: "Enter",
-    });
+    setVariationName("Variation 1", "Variation edited name");
     fireEvent.click(screen.getByText(strings.addExperimentsTab.next));
 
     expect(mockCallback.mock.calls[0][0]).toEqual([
@@ -112,14 +99,7 @@ it("Cannot have duplicate or empty variation names", async () => {
     skipFirstStep();
     mockCallback.mockClear();
 
-    fireEvent.click(screen.getByTestId("text-Variation 1"));
-    fireEvent.change(screen.getByTestId("input-Variation 1"), {
-        target: { value: "Control Group" },
-    });
-    fireEvent.keyDown(screen.getByTestId("input-Variation 1"), {
-        key: "Enter",
-        code: "Enter",
-    });
+    setVariationName("Variation 1", "Control Group");
     fireEvent.change(screen.getByTestId("input-Variation 1"), {
         target: { value: "" },
     });
@@ -165,3 +145,45 @@ it("Cannot cannot got to next step when traffic does not add up to 100%", async 
     ).toBeInTheDocument();
     expect(mockCallback.mock.calls.length).toBe(0);
 });
+
+it("Cannot cannot got to next step with less than two variations", async () => {
+    const mockCallback = jest.fn();
+    render(tree(mockCallback));
+    skipFirstStep();
+    mockCallback.mockClear();
+
+    fireEvent.click(screen.getByTestId("delete-Variation 1"));
+
+    setTraffic("Control Group", 100);
+
+    fireEvent.click(screen.getByText(strings.addExperimentsTab.next));
+
+    expect(
+        screen.getByText(
+            strings.addExperimentsTab.variationsComponent.minimumVariationError,
+        ),
+    ).toBeInTheDocument();
+    expect(mockCallback.mock.calls.length).toBe(0);
+});
+
+const setVariationName = (variation, value) => {
+    fireEvent.click(screen.getByTestId(`text-${variation}`));
+    fireEvent.change(screen.getByTestId(`input-${variation}`), {
+        target: { value },
+    });
+    fireEvent.keyDown(screen.getByTestId(`input-${variation}`), {
+        key: "Enter",
+        code: "Enter",
+    });
+};
+
+const setTraffic = (variation, value) => {
+    //Editing traffic to make ot equal to 100%
+    fireEvent.click(screen.getByTestId(`text-${variation}-traffic`));
+    fireEvent.change(screen.getByTestId(`input-${variation}-traffic`), {
+        target: { value },
+    });
+    fireEvent.keyDown(screen.getByTestId(`input-${variation}-traffic`), {
+        key: "Enter",
+    });
+};

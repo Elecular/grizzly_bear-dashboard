@@ -279,9 +279,14 @@ class VariationsInfo extends React.Component {
             this.addErrorMessage(translations.variationsMustBeUnique);
             return false;
         }
+        if (variations.length < 2) {
+            this.addErrorMessage(translations.minimumVariationError);
+            return false;
+        }
         this.removeErrorMessage(
             translations.trafficMustAddTo100,
             translations.variationsMustBeUnique,
+            translations.minimumVariationError,
         );
         setVariations(variations);
         return true;

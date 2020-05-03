@@ -49,6 +49,8 @@ export default {
             trafficMustAddTo100: "Total traffic must add up to 100%",
             enterValidVariationName:
                 "Variation names can only contain letters, numbers and spaces",
+            minimumVariationError:
+                "There must be at least 2 variations in an experiment",
         },
         settingsComponent: {
             subTitle: "Lastly, we can define your variations through settings",
@@ -59,6 +61,8 @@ export default {
             enterValidValueName: "A setting cannot be empty",
             settingNamesMustBeUnique: "Setting names must be unique",
             allSettingsMustBeDefined: "All Settings must be defined",
+            miniminSettingsError:
+                "There must be at least 1 setting in an experiment",
         },
 
         next: "Next",

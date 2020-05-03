@@ -187,6 +187,23 @@ it("Cannot edit a setting name to invalid name", async () => {
     expect(res.values[0][1]).toBe("blue");
 });
 
+it("Cannot go to next step if there are no settings", async () => {
+    const mockCallback = jest.fn();
+    render(tree(mockCallback));
+    skipFirstAndSecondStep();
+    mockCallback.mockClear();
+
+    fireEvent.click(screen.getByTestId("delete-Button Color"));
+    fireEvent.click(screen.getByText(strings.addExperimentsTab.finish));
+
+    expect(
+        screen.getByText(
+            strings.addExperimentsTab.settingsComponent.miniminSettingsError,
+        ),
+    ).toBeInTheDocument();
+    expect(mockCallback.mock.calls.length).toBe(0);
+});
+
 const setVariableName = (variable, value) => {
     fireEvent.click(screen.getByTestId(`text-${variable}`));
     fireEvent.change(screen.getByTestId(`input-${variable}`), {

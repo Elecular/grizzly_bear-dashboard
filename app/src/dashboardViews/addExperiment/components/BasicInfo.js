@@ -94,6 +94,10 @@ class BasicInfo extends React.Component {
                             onClick={() =>
                                 this.setState({
                                     scheduleExperiments: false,
+                                    startTime:
+                                        new Date().valueOf() +
+                                        1 * 24 * 3600 * 1000,
+                                    endTime: undefined,
                                 })
                             }
                         />
@@ -199,6 +203,7 @@ class BasicInfo extends React.Component {
 
     updateEndTime(date) {
         const time = this.processDate(date);
+        console.log(date);
         this.setState({ endTime: time });
     }
 
@@ -212,7 +217,8 @@ class BasicInfo extends React.Component {
         const { setExperimentInfo } = this.props;
 
         const isStartTimeValid =
-            typeof startTime === "number" && startTime > Date.now();
+            typeof startTime === "number" &&
+            startTime > Date.now() + 2 * 3600 * 1000;
         const isEndTimeValid =
             endTime === undefined ||
             (typeof endTime === "number" && endTime > startTime);
@@ -244,7 +250,6 @@ class BasicInfo extends React.Component {
         if (!isValid) {
             return false;
         }
-
         setExperimentInfo(this.state);
         return true;
     }

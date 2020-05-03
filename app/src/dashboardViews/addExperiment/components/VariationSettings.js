@@ -336,10 +336,14 @@ class VariationSettings extends React.Component {
         } else if (!areVariableNamesUnique(variables)) {
             this.addErrorMessage(translations.settingNamesMustBeUnique);
             return false;
+        } else if (variables.length < 1) {
+            this.addErrorMessage(translations.miniminSettingsError);
+            return false;
         }
         this.removeErrorMessage(
             translations.allSettingsMustBeDefined,
             translations.settingNamesMustBeUnique,
+            translations.miniminSettingsError,
         );
         setVariationSettings(this.state);
         return true;
