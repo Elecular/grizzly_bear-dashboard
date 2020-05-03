@@ -203,7 +203,6 @@ class BasicInfo extends React.Component {
 
     updateEndTime(date) {
         const time = this.processDate(date);
-        console.log(date);
         this.setState({ endTime: time });
     }
 
