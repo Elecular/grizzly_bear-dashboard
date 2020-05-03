@@ -1,5 +1,13 @@
 import React from "react";
-import { Row, Col, FormGroup, Label, Input, FormText } from "reactstrap";
+import {
+    Row,
+    Col,
+    FormGroup,
+    Label,
+    Input,
+    FormText,
+    Button,
+} from "reactstrap";
 import Datetime from "react-datetime";
 import { isMoment } from "moment";
 import strings from "../../../localizedStrings/strings";
@@ -94,10 +102,6 @@ class BasicInfo extends React.Component {
                             onClick={() =>
                                 this.setState({
                                     scheduleExperiments: false,
-                                    startTime:
-                                        new Date().valueOf() +
-                                        1 * 24 * 3600 * 1000,
-                                    endTime: undefined,
                                 })
                             }
                         />
@@ -160,28 +164,45 @@ class BasicInfo extends React.Component {
                             </FormGroup>
                         </Col>
                         <Col>
-                            <FormGroup>
-                                <Label for="endDate">
-                                    {
-                                        strings.addExperimentsTab
-                                            .basicInfoComponent.endDate
-                                    }
-                                </Label>
-                                <Datetime
-                                    id="endDate"
-                                    inputProps={{
-                                        "data-testid": "endDate",
+                            <FormGroup style={{ display: "flex" }}>
+                                <div style={{ flexGrow: 1 }}>
+                                    <Label for="endDate">
+                                        {
+                                            strings.addExperimentsTab
+                                                .basicInfoComponent.endDate
+                                        }
+                                    </Label>
+                                    <Datetime
+                                        id="endDate"
+                                        inputProps={{
+                                            "data-testid": "endDate",
+                                        }}
+                                        value={
+                                            endTime ? new Date(endTime) : null
+                                        }
+                                        onChange={(date) =>
+                                            this.updateEndTime(date)
+                                        }
+                                    />
+                                    {invalidEndTime && (
+                                        <FormText color="danger">
+                                            {invalidEndTime}
+                                        </FormText>
+                                    )}
+                                </div>
+                                <Button
+                                    size="sm"
+                                    style={{
+                                        marginLeft: "1rem",
+                                        marginTop: "auto",
+                                        minWidth: "6rem",
                                     }}
-                                    value={endTime ? new Date(endTime) : null}
-                                    onChange={(date) =>
-                                        this.updateEndTime(date)
+                                    onClick={() =>
+                                        this.setState({ endTime: undefined })
                                     }
-                                />
-                                {invalidEndTime && (
-                                    <FormText color="danger">
-                                        {invalidEndTime}
-                                    </FormText>
-                                )}
+                                >
+                                    Remove
+                                </Button>
                             </FormGroup>
                         </Col>
                     </Row>
