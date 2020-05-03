@@ -81,6 +81,7 @@ class VariationsInfo extends React.Component {
                                                 value.trim(),
                                             )
                                         }
+                                        dataTestId={variation.name}
                                         editible={!isControlGroup(variation)}
                                     />
                                 </td>
@@ -94,6 +95,7 @@ class VariationsInfo extends React.Component {
                                                 value,
                                             )
                                         }
+                                        dataTestId={`${variation.name}-traffic`}
                                     />
                                 </td>
                                 <td>
@@ -104,6 +106,7 @@ class VariationsInfo extends React.Component {
                                             onClick={() =>
                                                 this.deleteVariation(index)
                                             }
+                                            data-testid={`delete-${variation.name}`}
                                         >
                                             <i className="tim-icons icon-trash-simple" />
                                         </Button>

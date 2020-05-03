@@ -2,7 +2,13 @@ import React from "react";
 import { Button, FormGroup, Input } from "reactstrap";
 
 const EditableCell = (props) => {
-    const { value, onValueChange, cellWidth, editible = true } = props;
+    const {
+        value,
+        onValueChange,
+        cellWidth,
+        editible = true,
+        dataTestId = undefined,
+    } = props;
 
     const [edit, setEdit] = React.useState(false);
     const [showEditIcon, setShowEditIcon] = React.useState(false);
@@ -29,6 +35,7 @@ const EditableCell = (props) => {
                     <FormGroup>
                         <Input
                             type="text"
+                            data-testid={`input-${dataTestId}`}
                             autoFocus
                             defaultValue={value}
                             onKeyDown={(ev) => {
@@ -42,7 +49,12 @@ const EditableCell = (props) => {
                         />
                     </FormGroup>
                 ) : (
-                    <h5 onClick={() => setEdit(editible)}>{value}</h5>
+                    <h5
+                        onClick={() => setEdit(editible)}
+                        data-testid={`text-${dataTestId}`}
+                    >
+                        {value}
+                    </h5>
                 )}
             </div>
             {!edit && editible && (
@@ -64,6 +76,7 @@ const EditableCell = (props) => {
                 <i
                     className="tim-icons icon-lock-circle"
                     color="muted"
+                    data-testid={`icon-${dataTestId}`}
                     style={{
                         marginLeft: "0.5rem",
                         visibility: showEditIcon ? "inherit" : "hidden",

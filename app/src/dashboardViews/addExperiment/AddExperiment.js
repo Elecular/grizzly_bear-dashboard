@@ -46,7 +46,7 @@ const AddExperiment = (props) => {
             component: VariationsInfo,
             stepProps: {
                 setVariations: (variationsInfo) => {
-                    if (onNextClick) onNextClick(experimentInfo);
+                    if (onNextClick) onNextClick(variationsInfo);
                     setVariations(variationsInfo);
                 },
             },
@@ -74,10 +74,8 @@ const AddExperiment = (props) => {
             variationSettings,
             project,
         );
-        console.log(experiment);
         setLoading(true);
         setOpenModal(true);
-        console.log(experiment);
         addExperiment(project._id, experiment, authToken)
             .then((addedExperiment) => {
                 setLoading(false);

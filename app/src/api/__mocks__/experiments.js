@@ -1,1 +1,1 @@
-export const addExperiment = (projectId, experiment, authToken) => {};
+export const addExperiment = async (projectId, experiment, authToken) => {};

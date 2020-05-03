@@ -94,6 +94,7 @@ class VariationSettings extends React.Component {
                                         <EditableCell
                                             value={variable.name}
                                             editible={true}
+                                            dataTestId={`${variable.name}`}
                                             onValueChange={(value) =>
                                                 this.updateVariable(
                                                     variableIndex,
@@ -122,6 +123,7 @@ class VariationSettings extends React.Component {
                                             <EditableCell
                                                 value={value}
                                                 editible={true}
+                                                dataTestId={`${variable.name}-${variation.name}`}
                                                 onValueChange={(value) =>
                                                     this.updateValue(
                                                         variableIndex,
@@ -137,6 +139,7 @@ class VariationSettings extends React.Component {
                                     <Button
                                         className="btn-link btn-icon"
                                         color="danger"
+                                        data-testid={`delete-${variable.name}`}
                                         onClick={() =>
                                             this.deleteVariable(variableIndex)
                                         }
