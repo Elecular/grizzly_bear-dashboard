@@ -11,6 +11,7 @@ import { Modal, ModalBody, Button } from "reactstrap";
 import { forceLogin, isAuthTokenValid } from "../../auth/login";
 
 const AddExperiment = (props) => {
+    const { onNextClick = undefined } = props;
     const { authToken, project } = useContext(AuthorizationContext);
     //States for all the sub forms
     const [variations, setVariations] = React.useState([]);
@@ -33,7 +34,10 @@ const AddExperiment = (props) => {
             stepIcon: "tim-icons icon-bullet-list-67",
             component: BasicInfo,
             stepProps: {
-                setExperimentInfo,
+                setExperimentInfo: (experimentInfo) => {
+                    if (onNextClick) onNextClick(experimentInfo);
+                    setExperimentInfo(experimentInfo);
+                },
             },
         },
         {
@@ -41,7 +45,10 @@ const AddExperiment = (props) => {
             stepIcon: "tim-icons icon-chart-bar-32",
             component: VariationsInfo,
             stepProps: {
-                setVariations,
+                setVariations: (variationsInfo) => {
+                    if (onNextClick) onNextClick(experimentInfo);
+                    setVariations(variationsInfo);
+                },
             },
         },
         {
@@ -50,7 +57,10 @@ const AddExperiment = (props) => {
             component: VariationSettings,
             stepProps: {
                 variations,
-                setVariationSettings,
+                setVariationSettings: (settings) => {
+                    if (onNextClick) onNextClick(settings);
+                    setVariationSettings(settings);
+                },
             },
         },
     ];

@@ -41,9 +41,9 @@
     "scripts": {
         "start": "react-scripts start",
         "start:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build --renew-anon-volumes",
-        "build": "source ./bin/import_env.sh && react-scripts build",
-        "test": "source ./bin/import_env.sh && react-scripts test",
-        "eject": "source ./bin/import_env.sh && react-scripts eject",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
         "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
         "compile-sass": "node-sass src/assets/scss/black-dashboard-pro-react.scss src/assets/css/black-dashboard-pro-react.css",
         "minify-sass": "node-sass src/assets/scss/black-dashboard-pro-react.scss src/assets/css/black-dashboard-pro-react.min.css --output-style compressed",
@@ -59,6 +59,8 @@
         "not op_mini all"
     ],
     "devDependencies": {
+        "@testing-library/jest-dom": "^5.5.0",
+        "@testing-library/react": "^10.0.4",
         "eslint-plugin-flowtype": "3.13.0",
         "husky": "^4.2.5",
         "lint-staged": "^10.1.7",

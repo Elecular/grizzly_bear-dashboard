@@ -140,6 +140,9 @@ class BasicInfo extends React.Component {
                                 </Label>
                                 <Datetime
                                     id="startDate"
+                                    inputProps={{
+                                        "data-testid": "startDate",
+                                    }}
                                     value={new Date(startTime)}
                                     onChange={(date) =>
                                         this.updateStartTime(date)
@@ -162,6 +165,9 @@ class BasicInfo extends React.Component {
                                 </Label>
                                 <Datetime
                                     id="endDate"
+                                    inputProps={{
+                                        "data-testid": "endDate",
+                                    }}
                                     value={endTime ? new Date(endTime) : null}
                                     onChange={(date) =>
                                         this.updateEndTime(date)
@@ -238,6 +244,7 @@ class BasicInfo extends React.Component {
         if (!isValid) {
             return false;
         }
+
         setExperimentInfo(this.state);
         return true;
     }
