@@ -186,6 +186,7 @@ class DashboardLayout extends React.Component {
                         brandText={this.getActiveRoute(routes)}
                         sidebarOpened={this.state.sidebarOpened}
                         toggleSidebar={this.toggleSidebar}
+                        displayOptions={true}
                     />
                     <Switch>
                         {this.getRoutes(routes)}

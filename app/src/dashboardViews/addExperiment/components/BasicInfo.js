@@ -237,8 +237,7 @@ class BasicInfo extends React.Component {
         const { setExperimentInfo } = this.props;
 
         const isStartTimeValid =
-            typeof startTime === "number" &&
-            startTime > Date.now() + 2 * 3600 * 1000;
+            typeof startTime === "number" && startTime > Date.now(); //+ 2 * 3600 * 1000;
         const isEndTimeValid =
             endTime === undefined ||
             (typeof endTime === "number" && endTime > startTime);
