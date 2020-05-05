@@ -1,4 +1,4 @@
-import Experiments from "dashboardViews/experiments/Experiments";
+import Experiments from "dashboardViews/experiments/Index";
 import AddExperiment from "dashboardViews/addExperiment/AddExperiment";
 import strings from "localizedStrings/strings";
 

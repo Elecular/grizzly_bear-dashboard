@@ -1,20 +1,20 @@
 import React from "react";
 import { Switch, Route, Link } from "react-router-dom";
-import ExperimentTable from "./components/ExperimentsTable";
-import ExperimentResults from "./components/ExperimentResults";
+import Experiments from "./components/Experiments";
+import Experiment from "./components/experiment/Experiment";
 
-const Experiments = (props) => {
+const Index = (props) => {
     return (
         <Switch>
             <Route
                 path="/dashboard/experiments/results"
-                render={(props) => <ExperimentResults {...props} />}
+                render={(props) => <Experiment {...props} />}
             />
             <Route path="/dashboard/experiments">
-                <ExperimentTable />
+                <Experiments />
             </Route>
         </Switch>
     );
 };
 
-export default Experiments;
+export default Index;

@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 import { Table } from "reactstrap";
 import { Card, CardBody } from "reactstrap";
-import { getExperimentStats } from "../../../api/userActivity";
-import AuthorizationContext from "../../../auth/authorizationContext";
-import { Link, Redirect } from "react-router-dom";
+import { getExperimentStats } from "api/userActivity";
+import AuthorizationContext from "auth/authorizationContext";
+import { Redirect } from "react-router-dom";
 import strings from "localizedStrings/strings";
 import { BreadcrumbItem } from "reactstrap";
 import {

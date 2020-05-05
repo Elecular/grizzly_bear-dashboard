@@ -6,9 +6,9 @@ services:
       bash -c "npm start -- \
         --randomDataDump \
         --projects 5e865ed82a2aeb6436f498dc,5e865ed82a2aeb6436f498de,5e865ed82a2aeb6436f498d7,5e865ed82a2aeb6436f498dd \
-        --segments one,two,three,four \
-        --userActions buy,click,view \
-        --userVolume 50 --sessionVolume 200 --activityVolume 200 \
+        --segments one,two \
+        --userActions ads/impression,ads/click,ads/impression/ad-1,ads/impression/ad-2,ads/click/ad-1,ads/click/ad-2,business/purchase/item-1,business/purchase/item-2,custom/event-1,custom/event-2 \
+        --userVolume 500 --sessionVolume 2000 --activityVolume 2000 \
         --minTimestamp 79839129600000 --maxTimestamp 79839302400000 \
         --exit-on-completion && npx nodemon --unhandled-rejections=strict ./bin/www"
   experiments-web:

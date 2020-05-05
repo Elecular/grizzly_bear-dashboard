@@ -1,70 +1,10 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import { Table } from "reactstrap";
 import moment from "moment";
 import { Badge } from "reactstrap";
-import { Card, CardBody, CardTitle, CardText } from "reactstrap";
-import AuthorizationContext from "../../../auth/authorizationContext";
-import { getExperiments } from "../../../api/experiments";
-import { Button } from "reactstrap";
-import { Link } from "react-router-dom";
-import strings from "localizedStrings/strings";
-import { BreadcrumbItem } from "reactstrap";
-import { Redirect } from "react-router-dom";
 
-/**
- * Renders an experiment table
- */
-const ExperimentTable = React.memo((props) => {
-    const { authToken, project } = useContext(AuthorizationContext);
-    const [experiments, setExperiments] = useState([]);
-
-    React.useEffect(() => {
-        getExperiments(project._id, authToken).then(setExperiments);
-    }, [authToken, project._id]);
-
-    return (
-        <div className="content">
-            <ol className="breadcrumb bg-transparent">
-                <BreadcrumbItem>{strings.tabs.experiments}</BreadcrumbItem>
-            </ol>
-            <Card
-                style={{
-                    width: `${experiments.length === 0 ? 40 : 60}rem`,
-                    padding: "0.5rem",
-                }}
-            >
-                <CardBody>
-                    {experiments.length !== 0 ? (
-                        <ExperimentDataTable experiments={experiments} />
-                    ) : (
-                        <AddExperiment />
-                    )}
-                </CardBody>
-            </Card>
-        </div>
-    );
-});
-
-const ExperimentDataTable = (props) => {
-    const { experiments } = props;
-
-    const [selectedExperiment, setSelectedExperiment] = React.useState(
-        undefined,
-    );
-
-    if (selectedExperiment !== undefined) {
-        return (
-            <Redirect
-                to={{
-                    pathname: `/dashboard/experiments/results`,
-                    state: {
-                        selectedExperiment,
-                    },
-                }}
-            />
-        );
-    }
-
+const ExperimentsTable = (props) => {
+    const { experiments, onExperimentSelect } = props;
     return (
         <Table>
             <thead className="text-primary">
@@ -82,11 +22,11 @@ const ExperimentDataTable = (props) => {
                         <tr
                             key={experiment._id.experimentName}
                             className="clickable"
-                            onClick={() =>
-                                setSelectedExperiment(
+                            onClick={() => {
+                                onExperimentSelect(
                                     experiment._id.experimentName,
-                                )
-                            }
+                                );
+                            }}
                         >
                             <td>{experiment._id.experimentName}</td>
                             <td>{`${dateString(experiment.startTime)}`}</td>
@@ -103,29 +43,6 @@ const ExperimentDataTable = (props) => {
         </Table>
     );
 };
-
-const AddExperiment = (props) => (
-    <div className="text-center">
-        <Link to="/dashboard/add-experiment">
-            <Button
-                style={{
-                    marginTop: "1.5rem",
-                    marginBottom: "1.5rem",
-                }}
-                color="primary"
-            >
-                {strings.experimentsTab.addExperiment}
-            </Button>
-        </Link>
-        <CardText
-            style={{
-                marginBottom: "1rem",
-            }}
-        >
-            {strings.experimentsTab.noExperimentsFound}
-        </CardText>
-    </div>
-);
 
 const StatusBadge = (props) => {
     let { startTime, endTime } = props;
@@ -147,4 +64,4 @@ const StatusBadge = (props) => {
 
 const dateString = (date) => (date ? moment(date).format("MMM Do YYYY") : "-");
 
-export default ExperimentTable;
+export default ExperimentsTable;
