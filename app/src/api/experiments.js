@@ -42,6 +42,13 @@ export const getExperiments = async (projectId, authToken) => {
     );
 };
 
+export const getExperiment = async (projectId, experimentName, authToken) => {
+    return await get(
+        `${experimentsUri}/projects/${projectId}/experiments/${experimentName}`,
+        authToken,
+    );
+};
+
 /**
  * Adds experiment to the given project id
  * @param {string} projectId

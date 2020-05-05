@@ -14,7 +14,7 @@ import { Redirect } from "react-router-dom";
 /**
  * Renders an experiment table
  */
-const ExperimentTable = (props) => {
+const ExperimentTable = React.memo((props) => {
     const { authToken, project } = useContext(AuthorizationContext);
     const [experiments, setExperiments] = useState([]);
 
@@ -43,7 +43,7 @@ const ExperimentTable = (props) => {
             </Card>
         </div>
     );
-};
+});
 
 const ExperimentDataTable = (props) => {
     const { experiments } = props;

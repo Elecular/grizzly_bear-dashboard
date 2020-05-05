@@ -17,6 +17,7 @@ services:
     - "experiments-web:experiments-web"
     environment:
       REACT_APP_EXPERIMENTS_SERVICE: http://localhost:3000
+      REACT_APP_USER_ACTIVITY_SERVICE: http://localhost:80
   spark-batch:
     depends_on:
       - user-activity-web

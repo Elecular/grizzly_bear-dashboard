@@ -15,6 +15,7 @@ services:
     command: >
       bash -c "npm start -- \
         --randomDataDump \
+        --ownerId xo509wTObnqcYKiOgLCJoLcHqSpFKCjL@clients \
         --data '[{
           \"projectId\": \"5e865ed82a2aeb6436f498dc\",
           \"experimentName\": \"exp1\",
