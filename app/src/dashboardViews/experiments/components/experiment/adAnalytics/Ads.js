@@ -21,10 +21,6 @@ const AdAnalytics = React.memo((props) => {
             : environments[0],
     );
 
-    if (!experimentStats) {
-        return <h5>Loading ...</h5>;
-    }
-
     return (
         <div>
             <Header

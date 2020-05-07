@@ -1,6 +1,5 @@
 /**
- * This API is used for getting experiment metrics. Use the getInfo and getStats to get information about the experiments
- * Once you recieve the info and stats object, you can use other helper methods to extract meaningfull data
+ * This API is used for getting experiment metrics.
  */
 import { getExperiment } from "api/experiments";
 import { get } from "./request";
@@ -53,7 +52,7 @@ export default async function (projectId, experiment, authToken) {
  * @param {string} environment
  * @returns {Promise<Array<Object>>}
  */
-export const getExperimentStats = async (
+const getExperimentStats = async (
     projectId,
     experimentName,
     environment,

@@ -8,18 +8,42 @@ import AdAnalytics from "./adAnalytics/Ads";
 
 const Experiment = (props) => {
     const { authToken, project } = useContext(AuthorizationContext);
-    const experiment = props.location.state.selectedExperiment;
+    const experiment = props.location.state
+        ? props.location.state.selectedExperiment
+        : undefined;
+
     const [experimentStats, setExperimentStats] = useState(undefined);
+    const [error, SetError] = useState(false);
 
     React.useEffect(() => {
         if (!experiment) return;
-        getExperimentStats(project._id, experiment, authToken).then(
-            setExperimentStats,
-        );
+        getExperimentStats(project._id, experiment, authToken)
+            .then(setExperimentStats)
+            .catch((_) => {
+                SetError(true);
+            });
     }, [project._id, experiment, authToken]);
 
     if (!experiment) {
         return <Redirect to="dashboard/experiments" />;
+    }
+    if (!experimentStats) {
+        return (
+            <Message
+                title={"Loading"}
+                message={"The experiment is loading. Please wait..."}
+            />
+        );
+    }
+    if (error) {
+        return (
+            <Message
+                title={"Error"}
+                message={
+                    "There was an error while loading experiment stats. Please refresh the page and try again."
+                }
+            />
+        );
     }
     return (
         <div className="content">
@@ -32,6 +56,21 @@ const Experiment = (props) => {
         </div>
     );
 };
+
+const Message = (props) => (
+    <div className="content">
+        <Card
+            className="text-center"
+            style={{
+                width: "40em",
+                padding: "2rem",
+            }}
+        >
+            <h4>{props.title}</h4>
+            <p>{props.message}</p>
+        </Card>
+    </div>
+);
 
 const CollapseCard = (props) => {
     const [open, setOpen] = React.useState(props.open);
