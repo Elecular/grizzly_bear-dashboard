@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@auth0/auth0-spa-js": "^1.7.0",
-        "chart.js": "2.9.3",
+        "chart.js": "^2.9.3",
         "classnames": "2.2.6",
         "decimal.js": "^10.2.0",
         "history": "4.10.1",
@@ -19,7 +19,7 @@
         "react-bootstrap-sweetalert": "5.1.9",
         "react-bootstrap-switch": "15.5.3",
         "react-bootstrap-wizard": "0.0.7",
-        "react-chartjs-2": "2.9.0",
+        "react-chartjs-2": "^2.9.0",
         "react-datetime": "^2.16.3",
         "react-dom": "16.13.0",
         "react-google-maps": "9.4.5",
@@ -28,7 +28,7 @@
         "react-notification-alert": "0.0.12",
         "react-router-dom": "5.1.2",
         "react-scripts": "3.4.0",
-        "react-select": "3.0.8",
+        "react-select": "^3.0.8",
         "react-table": "6.11.5",
         "react-tagsinput": "3.19.0",
         "reactstrap": "8.4.1"

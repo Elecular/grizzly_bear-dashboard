@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Card, CardBody, CardText } from "reactstrap";
-import AuthorizationContext from "../../../auth/authorizationContext";
-import { getExperiments } from "../../../api/experiments";
+import AuthorizationContext from "auth/authorizationContext";
+import { getExperiments } from "api/experiments";
 import { Button } from "reactstrap";
 import { Link } from "react-router-dom";
 import strings from "localizedStrings/strings";

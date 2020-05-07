@@ -39,3 +39,11 @@
     color: $breadcrumb-active-color;
   }
 }
+
+.bread-crumb-active-link {
+  color: #ba54f5;
+  &:hover {
+      color: #e14eca
+  }
+  cursor: pointer;
+}

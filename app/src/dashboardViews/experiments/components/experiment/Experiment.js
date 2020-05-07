@@ -1,140 +1,81 @@
+import "./Experiment.scss";
 import React, { useContext, useState } from "react";
-import { Table } from "reactstrap";
-import { Card, CardBody } from "reactstrap";
-import { getExperimentStats } from "api/userActivity";
+import getExperimentStats from "api/experimentStats";
 import AuthorizationContext from "auth/authorizationContext";
+import { Card, CardHeader, CardBody, Collapse } from "reactstrap";
 import { Redirect } from "react-router-dom";
-import strings from "localizedStrings/strings";
-import { BreadcrumbItem } from "reactstrap";
-import {
-    UncontrolledDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
-} from "reactstrap";
+import AdAnalytics from "./adAnalytics/Ads";
 
-const environments = ["prod", "stage", "dev"];
+const Experiment = (props) => {
+    const { authToken, project } = useContext(AuthorizationContext);
+    const experiment = props.location.state.selectedExperiment;
+    const [experimentStats, setExperimentStats] = useState(undefined);
 
-const ExperimentResults = (props) => {
-    const [experiment, setExperiment] = useState(
-        props.location.state.selectedExperiment,
-    );
-    if (experiment === undefined) {
+    React.useEffect(() => {
+        if (!experiment) return;
+        getExperimentStats(project._id, experiment, authToken).then(
+            setExperimentStats,
+        );
+    }, [project._id, experiment, authToken]);
+
+    if (!experiment) {
         return <Redirect to="dashboard/experiments" />;
     }
-
     return (
         <div className="content">
-            <nav aria-label="breadcrumb" role="navigation">
-                <ol className="breadcrumb bg-transparent">
-                    <BreadcrumbItem
-                        className="bread-crumb-active-link"
-                        onClick={() => setExperiment(undefined)}
+            <CollapseCard header="Summary" open={true}></CollapseCard>
+            <CollapseCard header="Ad Analytics" open={true}>
+                <AdAnalytics experimentStats={experimentStats} />
+            </CollapseCard>
+            <CollapseCard header="Transaction Analytics"></CollapseCard>
+            <CollapseCard header="Custom Event Analytics"></CollapseCard>
+        </div>
+    );
+};
+
+const CollapseCard = (props) => {
+    const [open, setOpen] = React.useState(props.open);
+    const [hover, setHover] = React.useState(false);
+    return (
+        <div>
+            <Card>
+                <CardHeader
+                    role="tab"
+                    className="clickable"
+                    onClick={() => setOpen(!open)}
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                >
+                    <div
+                        style={{
+                            display: "flex",
+                        }}
                     >
-                        {strings.tabs.experiments}
-                    </BreadcrumbItem>
-                    <BreadcrumbItem active>{experiment}</BreadcrumbItem>
-                </ol>
-            </nav>
-            <Card
-                style={{
-                    width: `60rem`,
-                    padding: "0.5rem",
-                }}
-            >
-                <CardBody>
-                    <ExperimentStats experimentName={experiment} />
-                </CardBody>
+                        <h5
+                            className={`${
+                                hover ? "" : "text-muted"
+                            } white-on-hover`}
+                            style={{
+                                flexGrow: 1,
+                            }}
+                        >
+                            {props.header}
+                        </h5>
+                        <i
+                            className={`${
+                                hover ? "" : "text-muted"
+                            } white-on-hover tim-icons icon-minimal-${
+                                open ? "up" : "down"
+                            }`}
+                        />
+                    </div>
+                </CardHeader>
+                <Collapse role="tabpanel" isOpen={open}>
+                    <CardBody>{props.children}</CardBody>
+                </Collapse>
             </Card>
         </div>
     );
 };
 
-const ExperimentStats = React.memo((props) => {
-    const { experimentName } = props;
-    const { authToken, project } = useContext(AuthorizationContext);
-    const [environment, setEnvironment] = useState(environments[0]);
-    const [variations, setVariations] = useState(undefined);
-    const getStats = async (environment) => {
-        const res = await getExperimentStats(
-            project._id,
-            experimentName,
-            environment,
-            authToken,
-        );
-        setVariations(res.variations);
-        setEnvironment(res.environment);
-        console.log(res);
-    };
-
-    if (variations === undefined) {
-        getStats(environment);
-    }
-
-    return (
-        <>
-            <div
-                style={{
-                    display: "flex",
-                    marginBottom: "2rem",
-                }}
-            >
-                <h4
-                    style={{
-                        flexGrow: 1,
-                    }}
-                >
-                    Results
-                </h4>
-                <UncontrolledDropdown>
-                    <DropdownToggle
-                        caret
-                        data-toggle="dropdown"
-                        color="primary"
-                        size="sm"
-                    >
-                        {environment}
-                    </DropdownToggle>
-                    <DropdownMenu>
-                        {environments.map((environment) => (
-                            <DropdownItem
-                                onClick={() => {
-                                    getStats(environment);
-                                }}
-                            >
-                                {environment}
-                            </DropdownItem>
-                        ))}
-                    </DropdownMenu>
-                </UncontrolledDropdown>
-            </div>
-            {variations && (
-                <Table>
-                    <thead className="text-primary">
-                        <tr>
-                            <th className="text-left">Metrics</th>
-                            {Object.keys(variations).map((key) => (
-                                <th className="text-right">{key}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                </Table>
-            )}
-        </>
-    );
-});
-
-const ExperimentStatsTable = (props) => (
-    <Table>
-        <thead className="text-primary">
-            <tr>
-                <th className="text-left">Metrics</th>
-                {Object.keys(props.variations).map((key) => (
-                    <th className="text-right">{key}</th>
-                ))}
-            </tr>
-        </thead>
-    </Table>
-);
-
-export default ExperimentResults;
+export default Experiment;

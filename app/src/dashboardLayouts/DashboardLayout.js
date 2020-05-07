@@ -20,11 +20,11 @@ class DashboardLayout extends React.Component {
         super(props);
         this.state = {
             activeColor: "blue",
-            sidebarMini: false,
+            sidebarMini: true,
             opacity: 0,
             sidebarOpened: false,
         };
-        document.body.classList.toggle("sidebar-mini");
+        //document.body.classList.toggle("sidebar-mini");
         //document.body.classList.toggle("white-content");
     }
 
