@@ -1,11 +1,11 @@
 import { assignKeyToObject, getValueFromObject } from "utils/objectUtils";
-
+import adStatsMixin from "./AdStats";
 /**
  * These are the metrics that are needed for the UI to run properly
  */
 const essentialMetricIds = ["sessions", "ads/impression", "ads/click"];
 
-export default class ExperimentStats {
+class ExperimentStats {
     constructor(info, stats) {
         this.stats = {};
         stats.forEach((stat) => {
@@ -13,128 +13,6 @@ export default class ExperimentStats {
         });
 
         this.info = info;
-    }
-
-    /**
-     * Gets all ad related metrics
-     */
-    getAdMetrics(environment, segment) {
-        const metrics = this.getMetrics(environment, segment);
-        const variations = this.getVariations();
-
-        let adMetrics = {};
-        for (const variation of variations) {
-            const sessions = getValueFromObject(
-                metrics,
-                ["sessions", variation],
-                0,
-            );
-            const impressions = Math.round(
-                getValueFromObject(
-                    metrics,
-                    ["ads/impression", variation, "amount"],
-                    0,
-                ),
-            );
-            const clicks = Math.round(
-                getValueFromObject(
-                    metrics,
-                    ["ads/click", variation, "amount"],
-                    0,
-                ),
-            );
-            const conversions = getValueFromObject(
-                metrics,
-                ["ads/click", variation, "count"],
-                0,
-            );
-            const convertedSessionsPercentage =
-                sessions === 0 ? 0 : Math.round((conversions * 100) / sessions);
-
-            assignKeyToObject(adMetrics, ["sessions", variation], sessions);
-            assignKeyToObject(
-                adMetrics,
-                ["adImpressions", variation],
-                impressions,
-            );
-            assignKeyToObject(adMetrics, ["adClicks", variation], clicks);
-            assignKeyToObject(
-                adMetrics,
-                ["convertedSessionsPercentage", variation],
-                convertedSessionsPercentage,
-            );
-        }
-
-        adMetrics.placementBreakDown = this.getPlacementBreakDown(metrics);
-        return adMetrics;
-    }
-
-    getPlacementBreakDown(metrics) {
-        const variations = this.getVariations();
-
-        let placementMetrics = {};
-        for (const metricId of Object.keys(metrics)) {
-            //If the string matches ads/click/... or ads/impression/...
-            if (!metricId.match(new RegExp("ads/(click|impression)/.+")))
-                continue;
-            const placementId = metricId.replace(
-                new RegExp("ads/(click|impression)/"),
-                "",
-            );
-            if (placementMetrics[placementId]) continue;
-
-            for (const variation of variations) {
-                const sessions = getValueFromObject(metrics, [
-                    "sessions",
-                    variation,
-                ]);
-                const impressions = Math.round(
-                    getValueFromObject(
-                        metrics,
-                        [`ads/impression/${placementId}`, variation, "amount"],
-                        0,
-                    ),
-                );
-                const clicks = Math.round(
-                    getValueFromObject(
-                        metrics,
-                        [`ads/click/${placementId}`, variation, "amount"],
-                        0,
-                    ),
-                );
-                const conversions = getValueFromObject(
-                    metrics,
-                    [`ads/click/${placementId}`, variation, "count"],
-                    0,
-                );
-                const convertedSessionsPercentage =
-                    sessions === 0
-                        ? 0
-                        : Math.round((conversions * 100) / sessions);
-
-                assignKeyToObject(
-                    placementMetrics,
-                    [placementId, "sessions", variation],
-                    sessions,
-                );
-                assignKeyToObject(
-                    placementMetrics,
-                    [placementId, "adImpressions", variation],
-                    impressions,
-                );
-                assignKeyToObject(
-                    placementMetrics,
-                    [placementId, "adClicks", variation],
-                    clicks,
-                );
-                assignKeyToObject(
-                    placementMetrics,
-                    [placementId, "convertedSessionsPercentage", variation],
-                    convertedSessionsPercentage,
-                );
-            }
-        }
-        return placementMetrics;
     }
 
     /**
@@ -208,7 +86,6 @@ export default class ExperimentStats {
         const environments = this.getEnvironments();
         const variations = this.getVariations();
         const segments = this.getSegments();
-
         for (const environment of environments) {
             for (const variation of variations) {
                 for (const segment of segments) {
@@ -250,4 +127,18 @@ export default class ExperimentStats {
             ? []
             : this.info.variations.map((variation) => variation.variationName);
     }
+
+    getControlGroup() {
+        const controlGroup = this.info.variations.find(
+            (variation) => variation.controlGroup,
+        );
+        if (!controlGroup) {
+            throw new Error("Control Group not found. This is a fatal error!");
+        }
+        return controlGroup.variationName;
+    }
 }
+
+Object.assign(ExperimentStats.prototype, adStatsMixin);
+
+export default ExperimentStats;

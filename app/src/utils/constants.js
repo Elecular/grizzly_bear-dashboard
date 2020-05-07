@@ -11,3 +11,6 @@ export const variationColors = [
     "#dc3545",
     "#ffc107",
 ];
+
+export const positiveColor = "#28a745";
+export const negativeColor = "#dc3545";

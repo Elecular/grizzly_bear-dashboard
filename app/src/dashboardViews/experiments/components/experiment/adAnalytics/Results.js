@@ -1,8 +1,9 @@
 import React from "react";
 import { Table } from "reactstrap";
-import { variationColors } from "utils/constants";
+import { variationColors, positiveColor, negativeColor } from "utils/constants";
 import { Bar } from "react-chartjs-2";
 import ToolTipTableCell from "../ToolTipTableCell";
+import { getValueFromObject } from "utils/objectUtils";
 
 const AdResults = (props) => {
     const { stats, environment, segment } = props;
@@ -17,8 +18,17 @@ const AdResults = (props) => {
                     <thead className="text-primary">
                         <tr>
                             <th>Metric</th>
-                            {variations.map((variation) => (
-                                <th className="text-right">{variation}</th>
+                            {variations.map((variation, index) => (
+                                <th>
+                                    <i
+                                        style={{
+                                            color: variationColors[index],
+                                            marginRight: "0.4rem",
+                                        }}
+                                        className="fa fa-circle"
+                                    />
+                                    {variation}
+                                </th>
                             ))}
                         </tr>
                     </thead>
@@ -30,9 +40,7 @@ const AdResults = (props) => {
                                 tooltip="Number of sessions"
                             />
                             {variations.map((variation) => (
-                                <td className="text-right">
-                                    {metrics.sessions[variation]}
-                                </td>
+                                <td>{metrics.sessions[variation]}</td>
                             ))}
                         </tr>
                         <tr>
@@ -41,11 +49,11 @@ const AdResults = (props) => {
                                 text="Ad Impressions"
                                 tooltip="Number of times an ad was shown"
                             />
-                            {variations.map((variation) => (
-                                <td className="text-right">
-                                    {metrics.adImpressions[variation]}
-                                </td>
-                            ))}
+                            <MetricRow
+                                metricName="adImpressions"
+                                metrics={metrics}
+                                variations={variations}
+                            />
                         </tr>
                         <tr>
                             <ToolTipTableCell
@@ -53,11 +61,11 @@ const AdResults = (props) => {
                                 text="Ad Clicks"
                                 tooltip="Number of times an ad was clicked"
                             />
-                            {variations.map((variation) => (
-                                <td className="text-right">
-                                    {Math.round(metrics.adClicks[variation])}
-                                </td>
-                            ))}
+                            <MetricRow
+                                metricName="adClicks"
+                                metrics={metrics}
+                                variations={variations}
+                            />
                         </tr>
                         <tr>
                             <ToolTipTableCell
@@ -65,42 +73,100 @@ const AdResults = (props) => {
                                 text="Converted Sessions %"
                                 tooltip="% of sessions that clicked at least one ad"
                             />
-                            {variations.map((variation) => {
-                                return (
-                                    <td className="text-right">{`${metrics.convertedSessionsPercentage[variation]}%`}</td>
-                                );
-                            })}
+                            <MetricRow
+                                metricName="conversions"
+                                metrics={metrics}
+                                variations={variations}
+                                useFraction={true}
+                            />
                         </tr>
                     </tbody>
                 </Table>
             </div>
-            <div style={{ width: "30rem" }}>
-                <Bar
-                    data={{
-                        datasets: [
-                            {
-                                label: "% Converted Sessions",
-                                data: variations.map(
-                                    (variation) =>
-                                        metrics.convertedSessionsPercentage[
-                                            variation
-                                        ],
-                                ),
-                                backgroundColor: variations.map(
-                                    (_) => "rgba(0, 0, 0, 0)",
-                                ),
-                                borderColor: variationColors,
-                                borderWidth: 3,
-                                barPercentage: 0.3,
-                            },
-                        ],
-                        labels: variations,
-                    }}
-                    options={graphOptions}
-                />
-            </div>
+            {
+                <div style={{ width: "30rem" }}>
+                    <Bar
+                        data={{
+                            datasets: [
+                                {
+                                    label: "% Converted Sessions",
+                                    data: variations.map((variation) =>
+                                        (
+                                            getValueFromObject(metrics, [
+                                                "fraction",
+                                                "conversions",
+                                                variation,
+                                            ]) * 100
+                                        ).toFixed(2),
+                                    ),
+                                    backgroundColor: variationColors,
+                                    barPercentage: 0.3,
+                                },
+                            ],
+                            labels: variations,
+                        }}
+                        options={graphOptions}
+                    />
+                </div>
+            }
         </div>
     );
+};
+
+const MetricRow = (props) => {
+    const { metricName, metrics, variations, useFraction = false } = props;
+    return variations.map((variation) => {
+        const value = useFraction
+            ? (
+                  getValueFromObject(
+                      metrics,
+                      ["fraction", metricName, variation],
+                      0,
+                  ) * 100
+              ).toFixed(2)
+            : Math.round(
+                  getValueFromObject(metrics, [metricName, variation], 0),
+              );
+
+        let diff = getValueFromObject(
+            metrics,
+            ["diff", metricName, variation],
+            0,
+        );
+        if (!isFinite(diff)) {
+            diff = 0;
+        }
+        const absoluteDiff = Math.abs(diff);
+
+        return (
+            <td>
+                {`${value}${useFraction ? "%" : ""}`}
+                {absoluteDiff > 0.01 && (
+                    <>
+                        <i
+                            style={{
+                                display: "inline-flex",
+                                marginLeft: "0.75rem",
+                                marginRight: "0.2rem",
+                                color: diff > 0 ? positiveColor : negativeColor,
+                            }}
+                            className={`fa fa-arrow-${
+                                diff > 0 ? "up" : "down"
+                            }`}
+                        ></i>
+                        <div
+                            style={{
+                                display: "inline-flex",
+                                color: diff > 0 ? positiveColor : negativeColor,
+                            }}
+                        >
+                            {`${Math.round(absoluteDiff * 100)}%`}
+                        </div>
+                    </>
+                )}
+            </td>
+        );
+    });
 };
 
 const graphOptions = {
