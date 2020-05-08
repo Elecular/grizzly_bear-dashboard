@@ -1,8 +1,6 @@
 import React from "react";
 import { Table, Label } from "reactstrap";
-import { Bar } from "react-chartjs-2";
 import Select from "react-select";
-import { getValueFromObject } from "utils/objectUtils";
 import { variationColors, positiveColor, negativeColor } from "utils/constants";
 import ToolTipTableCell from "../ToolTipTableCell";
 import PlacementBreakdownGraph from "./PlacementBreakdownGraph";
@@ -36,7 +34,6 @@ const PlacementBreakDown = (props) => {
     const variations = stats.getVariations();
     const metrics = stats.getMetrics(environment, segment);
     const placementIds = stats.getPlacementIds(environment, segment);
-    console.log(placementIds);
     return (
         <div>
             <div style={{ width: "15rem" }}>
@@ -57,7 +54,7 @@ const PlacementBreakDown = (props) => {
                             <tr>
                                 <th>Placement Id</th>
                                 {variations.map((variation, index) => (
-                                    <th>
+                                    <th key={variation}>
                                         <i
                                             style={{
                                                 color: variationColors[index],
@@ -78,7 +75,7 @@ const PlacementBreakDown = (props) => {
                                     tooltip="Number of sessions"
                                 />
                                 {variations.map((variation) => (
-                                    <td>
+                                    <td key={variation}>
                                         {Math.round(
                                             metrics.get("sessions", variation),
                                         )}
@@ -86,7 +83,7 @@ const PlacementBreakDown = (props) => {
                                 ))}
                             </tr>
                             {placementIds.map((placementId) => (
-                                <tr>
+                                <tr key={placementId}>
                                     <td>{`${placementId}`}</td>
                                     <MetricRow
                                         placementId={placementId}
@@ -147,7 +144,7 @@ const MetricRow = (props) => {
         const color = diff > 0 ? positiveColor : negativeColor;
 
         return (
-            <td>
+            <td key={variation}>
                 {`${value}${metricOption.useFraction ? "%" : ""}`}
                 {absoluteDiff > 0.01 && (
                     <>

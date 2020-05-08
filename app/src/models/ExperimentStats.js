@@ -217,8 +217,12 @@ class ExperimentStats {
         return !this.info || !this.info.variations
             ? []
             : this.info.variations
-                  .map((variation) => variation.variationName)
-                  .sort();
+                  .sort((v1, v2) => {
+                      if (v1.controlGroup) return -1;
+                      if (v2.controlGroup) return 1;
+                      return v1.variationName.localeCompare(v2.variationName);
+                  })
+                  .map((variation) => variation.variationName);
     }
 
     /**

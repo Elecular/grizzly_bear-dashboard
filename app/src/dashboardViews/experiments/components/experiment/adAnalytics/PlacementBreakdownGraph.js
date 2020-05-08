@@ -1,6 +1,5 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import { getValueFromObject } from "utils/objectUtils";
 import { variationColors } from "utils/constants";
 
 const PlacementBreakDownGraph = (props) => {

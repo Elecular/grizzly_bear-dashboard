@@ -14,7 +14,7 @@ const AdResults = (props) => {
                         <tr>
                             <th>Metric</th>
                             {stats.getVariations().map((variation, index) => (
-                                <th>
+                                <th key={variation}>
                                     <i
                                         style={{
                                             color: variationColors[index],
@@ -122,7 +122,7 @@ const MetricRow = (props) => {
         const color = diff > 0 ? positiveColor : negativeColor;
 
         return (
-            <td>
+            <td key={variation}>
                 {`${value}${normalized ? "%" : ""}`}
                 {absoluteDiff > 0.01 && (
                     <>
