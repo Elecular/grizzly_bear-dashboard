@@ -5,6 +5,8 @@ import AuthorizationContext from "auth/authorizationContext";
 import { Card, CardHeader, CardBody, Collapse } from "reactstrap";
 import { Redirect } from "react-router-dom";
 import AdAnalytics from "./adAnalytics/Ads";
+import strings from "localizedStrings/strings";
+const translations = strings.experimentsTab;
 
 const Experiment = (props) => {
     const { authToken, project } = useContext(AuthorizationContext);
@@ -30,29 +32,34 @@ const Experiment = (props) => {
     if (!experimentStats) {
         return (
             <Message
-                title={"Loading"}
-                message={"The experiment is loading. Please wait..."}
+                title={translations.loading}
+                message={translations.loadingMessage}
             />
         );
     }
     if (error) {
         return (
             <Message
-                title={"Error"}
-                message={
-                    "There was an error while loading experiment stats. Please refresh the page and try again."
-                }
+                title={translations.error}
+                message={translations.errorMessage}
             />
         );
     }
     return (
         <div className="content">
-            <CollapseCard header="Summary" open={true}></CollapseCard>
-            <CollapseCard header="Ad Analytics" open={true}>
+            <CollapseCard
+                header={translations.experimentInfo}
+                open={true}
+            ></CollapseCard>
+            <CollapseCard header={translations.adAnalytics.name} open={true}>
                 <AdAnalytics experimentStats={experimentStats} />
             </CollapseCard>
-            <CollapseCard header="Transaction Analytics"></CollapseCard>
-            <CollapseCard header="Custom Event Analytics"></CollapseCard>
+            <CollapseCard
+                header={translations.transactionAnalytics.name}
+            ></CollapseCard>
+            <CollapseCard
+                header={translations.customAnalytics.name}
+            ></CollapseCard>
         </div>
     );
 };

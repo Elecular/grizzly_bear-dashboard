@@ -70,6 +70,26 @@ export default {
         finish: "Create",
     },
 
+    experimentsTab: {
+        loading: "Loading",
+        loadingMessage: "The experiment is loading. Please wait...",
+        error: "Error",
+        errorMessage:
+            "There was an error while loading experiment stats. Please refresh the page and try again.",
+        experimentInfo: "Experiment Info",
+        adAnalytics: {
+            name: "Ad Analytics",
+            summary: "Summary",
+            placementBreakDown: "Placement Breakdown",
+        },
+        transactionAnalytics: {
+            name: "Transaction Analytics",
+        },
+        customAnalytics: {
+            name: "Custom Analytics",
+        },
+    },
+
     footer: {
         aboutUs: "About Us",
         blog: "Blog",

@@ -3,19 +3,23 @@ import { Row, Col, Label } from "reactstrap";
 import Select from "react-select";
 import AdResults from "./Results";
 import PlacementBreakDown from "./PlacementBreakdown";
+import AdStats from "models/AdStats";
+import strings from "localizedStrings/strings";
 
+const translations = strings.experimentsTab.adAnalytics;
 const defaultEnvironment = "prod";
 const defaultSegment = "all";
 
 const AdAnalytics = React.memo((props) => {
     const { experimentStats } = props;
-
+    const adStats = AdStats.Instantiate(experimentStats);
     const environments = experimentStats
         ? experimentStats.getEnvironments()
         : [];
     const segments = experimentStats ? experimentStats.getSegments() : [];
-    const [segment, setSegment] = React.useState(defaultSegment);
-    const [environment, setEnvironment] = React.useState(
+
+    const [selectedSegment, setSegment] = React.useState(defaultSegment);
+    const [selectedEnvironment, setEnvironment] = React.useState(
         environments.length === 0 || environments.includes(defaultEnvironment)
             ? defaultEnvironment
             : environments[0],
@@ -24,9 +28,9 @@ const AdAnalytics = React.memo((props) => {
     return (
         <div>
             <Header
-                selectedEnvironment={environment}
+                selectedEnvironment={selectedEnvironment}
                 environments={environments}
-                selectedSegment={segment}
+                selectedSegment={selectedSegment}
                 segments={segments}
                 onEnvironmentChange={setEnvironment}
                 onSegmentChange={setSegment}
@@ -36,13 +40,13 @@ const AdAnalytics = React.memo((props) => {
                     className="text-muted"
                     style={{ marginTop: "4rem", marginBottom: "1rem" }}
                 >
-                    Summary
+                    {translations.summary}
                 </h4>
                 {
                     <AdResults
-                        stats={experimentStats}
-                        environment={environment}
-                        segment={segment}
+                        stats={adStats}
+                        environment={selectedEnvironment}
+                        segment={selectedSegment}
                     />
                 }
             </div>
@@ -51,13 +55,13 @@ const AdAnalytics = React.memo((props) => {
                     className="text-muted"
                     style={{ marginTop: "4rem", marginBottom: "1rem" }}
                 >
-                    Placement Break Down
+                    {translations.placementBreakDown}
                 </h4>
                 {
                     <PlacementBreakDown
-                        stats={experimentStats}
-                        environment={environment}
-                        segment={segment}
+                        stats={adStats}
+                        environment={selectedEnvironment}
+                        segment={selectedSegment}
                     />
                 }
             </div>

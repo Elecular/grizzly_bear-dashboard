@@ -1,18 +1,11 @@
 import React from "react";
 import { Table } from "reactstrap";
 import { variationColors, positiveColor, negativeColor } from "utils/constants";
-import { Bar } from "react-chartjs-2";
 import ToolTipTableCell from "../ToolTipTableCell";
-import { getValueFromObject } from "utils/objectUtils";
-import AdStats from "models/AdStats";
+import ResultsGraph from "./ResultsGraph";
 
 const AdResults = (props) => {
     const { stats, environment, segment } = props;
-
-    const adStats = AdStats.Instantiate(stats);
-    const variations = adStats.getVariations();
-    const metrics = adStats.getAdDataset(environment, segment);
-
     return (
         <div style={{ display: "flex", alignItems: "center" }}>
             <div style={{ flexGrow: 1, marginRight: "3rem" }}>
@@ -20,7 +13,7 @@ const AdResults = (props) => {
                     <thead className="text-primary">
                         <tr>
                             <th>Metric</th>
-                            {variations.map((variation, index) => (
+                            {stats.getVariations().map((variation, index) => (
                                 <th>
                                     <i
                                         style={{
@@ -41,9 +34,12 @@ const AdResults = (props) => {
                                 text="Sessions"
                                 tooltip="Number of sessions"
                             />
-                            {variations.map((variation) => (
-                                <td>{metrics.sessions[variation]}</td>
-                            ))}
+                            <MetricRow
+                                metricName="sessions"
+                                stats={stats}
+                                environment={environment}
+                                segment={segment}
+                            />
                         </tr>
                         <tr>
                             <ToolTipTableCell
@@ -53,8 +49,9 @@ const AdResults = (props) => {
                             />
                             <MetricRow
                                 metricName="adImpressions"
-                                metrics={metrics}
-                                variations={variations}
+                                stats={stats}
+                                environment={environment}
+                                segment={segment}
                             />
                         </tr>
                         <tr>
@@ -65,8 +62,9 @@ const AdResults = (props) => {
                             />
                             <MetricRow
                                 metricName="adClicks"
-                                metrics={metrics}
-                                variations={variations}
+                                stats={stats}
+                                environment={environment}
+                                segment={segment}
                             />
                         </tr>
                         <tr>
@@ -77,9 +75,10 @@ const AdResults = (props) => {
                             />
                             <MetricRow
                                 metricName="conversions"
-                                metrics={metrics}
-                                variations={variations}
-                                useFraction={true}
+                                stats={stats}
+                                environment={environment}
+                                segment={segment}
+                                normalized={true}
                             />
                         </tr>
                     </tbody>
@@ -87,27 +86,10 @@ const AdResults = (props) => {
             </div>
             {
                 <div style={{ width: "30rem" }}>
-                    <Bar
-                        data={{
-                            datasets: [
-                                {
-                                    label: "% Converted Sessions",
-                                    data: variations.map((variation) =>
-                                        (
-                                            getValueFromObject(metrics, [
-                                                "normalized",
-                                                "conversions",
-                                                variation,
-                                            ]) * 100
-                                        ).toFixed(2),
-                                    ),
-                                    backgroundColor: variationColors,
-                                    barPercentage: 0.3,
-                                },
-                            ],
-                            labels: variations,
-                        }}
-                        options={graphOptions}
+                    <ResultsGraph
+                        stats={stats}
+                        environment={environment}
+                        segment={segment}
                     />
                 </div>
             }
@@ -116,33 +98,32 @@ const AdResults = (props) => {
 };
 
 const MetricRow = (props) => {
-    const { metricName, metrics, variations, useFraction = false } = props;
-    return variations.map((variation) => {
-        const value = useFraction
-            ? (
-                  getValueFromObject(
-                      metrics,
-                      ["normalized", metricName, variation],
-                      0,
-                  ) * 100
-              ).toFixed(2)
-            : Math.round(
-                  getValueFromObject(metrics, [metricName, variation], 0),
-              );
+    const {
+        stats,
+        environment,
+        segment,
+        metricName,
+        normalized = false,
+    } = props;
+    const dataset = stats.getAdDataset(environment, segment);
+    const variations = stats.getVariations();
 
-        let diff = getValueFromObject(
-            metrics,
-            ["diff", metricName, variation],
-            0,
-        );
-        if (!isFinite(diff)) {
-            diff = 0;
-        }
+    return variations.map((variation) => {
+        //Calculating metric value
+        let value = dataset.get(metricName, variation, normalized);
+        if (normalized) value = (value * 100).toFixed(2);
+        else value = Math.round(value);
+
+        //Calculating diff from control group
+        let diff = dataset.getDiff(metricName, variation);
+        if (!isFinite(diff)) diff = 0;
         const absoluteDiff = Math.abs(diff);
+
+        const color = diff > 0 ? positiveColor : negativeColor;
 
         return (
             <td>
-                {`${value}${useFraction ? "%" : ""}`}
+                {`${value}${normalized ? "%" : ""}`}
                 {absoluteDiff > 0.01 && (
                     <>
                         <i
@@ -150,7 +131,7 @@ const MetricRow = (props) => {
                                 display: "inline-flex",
                                 marginLeft: "0.75rem",
                                 marginRight: "0.2rem",
-                                color: diff > 0 ? positiveColor : negativeColor,
+                                color: color,
                             }}
                             className={`fa fa-arrow-${
                                 diff > 0 ? "up" : "down"
@@ -159,7 +140,7 @@ const MetricRow = (props) => {
                         <div
                             style={{
                                 display: "inline-flex",
-                                color: diff > 0 ? positiveColor : negativeColor,
+                                color: color,
                             }}
                         >
                             {`${Math.round(absoluteDiff * 100)}%`}
@@ -169,39 +150,6 @@ const MetricRow = (props) => {
             </td>
         );
     });
-};
-
-const graphOptions = {
-    legend: {
-        display: false,
-    },
-    scales: {
-        xAxes: [
-            {
-                gridLines: {
-                    offsetGridLines: true,
-                    display: false,
-                },
-            },
-        ],
-        yAxes: [
-            {
-                scaleLabel: {
-                    display: true,
-                    labelString: "% Converted Sessions",
-                },
-                ticks: {
-                    beginAtZero: true,
-                },
-                gridLines: {
-                    zeroLineColor: "#9A9A9A25",
-                    display: true,
-                    color: "#9A9A9A25",
-                    drawBorder: false,
-                },
-            },
-        ],
-    },
 };
 
 export default AdResults;

@@ -54,7 +54,7 @@ const adMetricDefinitions = [
  */
 
 /**
- * An AdDataset describe Ad performance over multiple variations.
+ * An AdDataset describes Ad performance over multiple variations.
  * 
  * normalized has metrics that are normalized to the number of sessions. 
  * For example, if sessions is 10 and adClicks is 4, then normalized.adClicks is 0.4
@@ -71,7 +71,7 @@ const adMetricDefinitions = [
         adClicks: AdMetric,
         adImpressions: AdMetric,
         conversions: AdMetric
-    }
+    },
     diff: {
         adClicks: AdMetric,
         adImpressions: AdMetric,
@@ -113,7 +113,11 @@ class AdStats extends ExperimentStats {
 
     /**
      * Gets aggregated ads data
-     * @returns {AdDataset}
+     * @returns {{
+        data: AdDataset,
+        get: (adMetricName: string, variation: string, normalized: boolean) => number,
+        getDiff: (adMetricName: string, variation: string)
+    }}
      */
     getAdDataset(environment, segment) {
         const metrics = this.getMetrics(environment, segment);
@@ -148,7 +152,28 @@ class AdStats extends ExperimentStats {
         }
 
         adMetrics.diff = this._getAdMetricsDiff(adMetrics);
-        return adMetrics;
+        return {
+            data: adMetrics,
+            //Helper method for extracting ad metrics
+            get: function (adMetricName, variation, normalized = false) {
+                return getValueFromObject(
+                    this.data,
+                    [
+                        ...(normalized ? ["normalized"] : []),
+                        ...[adMetricName, variation],
+                    ],
+                    0,
+                );
+            },
+            //Helper method for extracting diff
+            getDiff: function (adMetricName, variation) {
+                return getValueFromObject(
+                    this.data,
+                    ["diff", adMetricName, variation],
+                    0,
+                );
+            },
+        };
     }
 
     /**
@@ -200,7 +225,34 @@ class AdStats extends ExperimentStats {
                 placementMetrics[placementId],
             );
         }
-        return placementMetrics;
+        return {
+            data: placementMetrics,
+            //Helper method for extracting ad metrics
+            get: function (
+                placementId,
+                adMetricName,
+                variation,
+                normalized = false,
+            ) {
+                return getValueFromObject(
+                    this.data,
+                    [
+                        placementId,
+                        ...(normalized ? ["normalized"] : []),
+                        ...[adMetricName, variation],
+                    ],
+                    0,
+                );
+            },
+            //Helper method for extracting diff
+            getDiff: function (placementId, adMetricName, variation) {
+                return getValueFromObject(
+                    this.data,
+                    [placementId, "diff", adMetricName, variation],
+                    0,
+                );
+            },
+        };
     }
 
     /**
@@ -211,13 +263,17 @@ class AdStats extends ExperimentStats {
      */
     getPlacementIds(environment, segment) {
         let metrics = this.getMetrics(environment, segment);
-        return Object.keys(metrics.data)
-            .map((metricId) => {
-                if (this._isPlacementId(metricId)) {
-                    return this._getPlacementId(metricId);
-                }
-            })
-            .filter((placementId) => placementId !== undefined);
+        return [
+            ...new Set(
+                Object.keys(metrics.data)
+                    .map((metricId) => {
+                        if (this._isPlacementId(metricId)) {
+                            return this._getPlacementId(metricId);
+                        }
+                    })
+                    .filter((placementId) => placementId !== undefined),
+            ),
+        ].sort();
     }
 
     _getAdMetricsDiff(adMetrics) {

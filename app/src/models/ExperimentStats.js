@@ -162,7 +162,7 @@ class ExperimentStats {
                 }
             }
         }
-        return [...segments];
+        return [...segments].sort();
     }
 
     /**
@@ -171,7 +171,6 @@ class ExperimentStats {
      */
     getMetricIds() {
         let metricIds = new Set();
-        if (!this.stats) return [...metricIds, ...essentialMetricIds];
 
         const environments = this.getEnvironments();
         const variations = this.getVariations();
@@ -199,7 +198,7 @@ class ExperimentStats {
                 }
             }
         }
-        return [...metricIds, ...essentialMetricIds];
+        return [...metricIds, ...essentialMetricIds].sort();
     }
 
     /**
@@ -207,7 +206,7 @@ class ExperimentStats {
      * @returns {Array<string>}
      */
     getEnvironments() {
-        return Object.keys(this.stats);
+        return Object.keys(this.stats).sort();
     }
 
     /**
@@ -217,7 +216,9 @@ class ExperimentStats {
     getVariations() {
         return !this.info || !this.info.variations
             ? []
-            : this.info.variations.map((variation) => variation.variationName);
+            : this.info.variations
+                  .map((variation) => variation.variationName)
+                  .sort();
     }
 
     /**

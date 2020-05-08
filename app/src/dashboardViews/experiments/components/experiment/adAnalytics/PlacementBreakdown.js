@@ -5,13 +5,16 @@ import Select from "react-select";
 import { getValueFromObject } from "utils/objectUtils";
 import { variationColors, positiveColor, negativeColor } from "utils/constants";
 import ToolTipTableCell from "../ToolTipTableCell";
-import AdStats from "models/AdStats";
+import PlacementBreakdownGraph from "./PlacementBreakdownGraph";
 
+/**
+ * These are the different metrics the users can see
+ */
 const metricOptions = [
     {
         value: "adImpressions",
         label: "Ad Impressions",
-        graphLabel: "Ad Impressions / Sessions",
+        graphLabel: "# Ad Impressions Per Sessions",
     },
     {
         value: "adClicks",
@@ -22,7 +25,7 @@ const metricOptions = [
         value: "conversions",
         label: "Converted Sessions %",
         graphLabel: "Converted Sessions %",
-        useFraction: true,
+        normalized: true,
     },
 ];
 
@@ -30,12 +33,10 @@ const PlacementBreakDown = (props) => {
     const { stats, environment, segment } = props;
     const [metricOption, setMetricOption] = React.useState(metricOptions[2]);
 
-    const adStats = AdStats.Instantiate(stats);
-    const variations = adStats.getVariations();
-    const metrics = adStats.getAdDataset(environment, segment);
-    const placementMetrics = adStats.getPlacementDataset(environment, segment);
-
-    console.log(placementMetrics);
+    const variations = stats.getVariations();
+    const metrics = stats.getMetrics(environment, segment);
+    const placementIds = stats.getPlacementIds(environment, segment);
+    console.log(placementIds);
     return (
         <div>
             <div style={{ width: "15rem" }}>
@@ -72,43 +73,40 @@ const PlacementBreakDown = (props) => {
                         <tbody>
                             <tr>
                                 <ToolTipTableCell
-                                    id="summary-sessions-info-icon"
+                                    id="placement-sessions-info-icon"
                                     text="Sessions"
                                     tooltip="Number of sessions"
                                 />
                                 {variations.map((variation) => (
                                     <td>
                                         {Math.round(
-                                            metrics["sessions"][variation],
+                                            metrics.get("sessions", variation),
                                         )}
                                     </td>
                                 ))}
                             </tr>
-                            {Object.keys(placementMetrics)
-                                .sort()
-                                .map((placementId) => (
-                                    <tr>
-                                        <td>{`${placementId}`}</td>
-                                        <MetricRow
-                                            placementId={placementId}
-                                            metricOption={metricOption}
-                                            placementMetrics={placementMetrics}
-                                            variations={variations}
-                                        />
-                                    </tr>
-                                ))}
+                            {placementIds.map((placementId) => (
+                                <tr>
+                                    <td>{`${placementId}`}</td>
+                                    <MetricRow
+                                        placementId={placementId}
+                                        metricOption={metricOption}
+                                        stats={stats}
+                                        environment={environment}
+                                        segment={segment}
+                                    />
+                                </tr>
+                            ))}
                         </tbody>
                     </Table>
                 </div>
                 <div style={{ width: "30rem" }}>
                     {
-                        <Bar
-                            data={graphData(
-                                variations,
-                                placementMetrics,
-                                metricOption,
-                            )}
-                            options={graphOptions(metricOption)}
+                        <PlacementBreakdownGraph
+                            metricOption={metricOption}
+                            stats={stats}
+                            environment={environment}
+                            segment={segment}
                         />
                     }
                 </div>
@@ -118,34 +116,35 @@ const PlacementBreakDown = (props) => {
 };
 
 const MetricRow = (props) => {
-    const { placementId, metricOption, placementMetrics, variations } = props;
+    const { placementId, metricOption, stats, environment, segment } = props;
+
+    const variations = stats.getVariations();
+    const placementDataset = stats.getPlacementDataset(environment, segment);
+
     return variations.map((variation) => {
-        let value = Math.round(
-            getValueFromObject(
-                placementMetrics,
-                [placementId, metricOption.value, variation],
-                0,
-            ),
+        //Calculating metric value
+        let value = placementDataset.get(
+            placementId,
+            metricOption.value,
+            variation,
+            metricOption.normalized,
         );
-        if (metricOption.useFraction) {
-            value = (
-                getValueFromObject(
-                    placementMetrics,
-                    [placementId, "normalized", metricOption.value, variation],
-                    0,
-                ) * 100
-            ).toFixed(2);
+        if (metricOption.normalized) {
+            value = (value * 100).toFixed(2);
+        } else {
+            value = Math.round(value);
         }
 
-        let diff = getValueFromObject(
-            placementMetrics,
-            [placementId, "diff", metricOption.value, variation],
-            0,
+        //Calculating diff from control group
+        let diff = placementDataset.getDiff(
+            placementId,
+            metricOption.value,
+            variation,
         );
-        if (!isFinite(diff)) {
-            diff = 0;
-        }
+        if (!isFinite(diff)) diff = 0;
         const absoluteDiff = Math.abs(diff);
+
+        const color = diff > 0 ? positiveColor : negativeColor;
 
         return (
             <td>
@@ -157,7 +156,7 @@ const MetricRow = (props) => {
                                 display: "inline-flex",
                                 marginLeft: "0.75rem",
                                 marginRight: "0.2rem",
-                                color: diff > 0 ? positiveColor : negativeColor,
+                                color: color,
                             }}
                             className={`fa fa-arrow-${
                                 diff > 0 ? "up" : "down"
@@ -166,7 +165,7 @@ const MetricRow = (props) => {
                         <div
                             style={{
                                 display: "inline-flex",
-                                color: diff > 0 ? positiveColor : negativeColor,
+                                color: color,
                             }}
                         >
                             {`${Math.round(absoluteDiff * 100)}%`}
@@ -177,65 +176,5 @@ const MetricRow = (props) => {
         );
     });
 };
-
-const graphData = (variations, placementMetrics, metricOption) => ({
-    datasets: variations.map((variation, index) => ({
-        label: variation,
-        backgroundColor: variationColors[index],
-        data: Object.keys(placementMetrics)
-            .sort()
-            .map((placementId) =>
-                (
-                    getValueFromObject(
-                        placementMetrics,
-                        [
-                            placementId,
-                            "normalized",
-                            metricOption.value,
-                            variation,
-                        ],
-                        0,
-                    ) * (metricOption.useFraction ? 100 : 1)
-                ).toFixed(2),
-            ),
-        borderWidth: 1,
-        barPercentage: 1,
-        categoryPercentage: 0.3,
-    })),
-    labels: Object.keys(placementMetrics).sort(),
-});
-
-const graphOptions = (metricsOption) => ({
-    legend: {
-        display: false,
-    },
-    scales: {
-        xAxes: [
-            {
-                gridLines: {
-                    offsetGridLines: true,
-                    display: false,
-                },
-            },
-        ],
-        yAxes: [
-            {
-                scaleLabel: {
-                    display: true,
-                    labelString: metricsOption.graphLabel,
-                },
-                ticks: {
-                    beginAtZero: true,
-                },
-                gridLines: {
-                    zeroLineColor: "#9A9A9A25",
-                    display: true,
-                    color: "#9A9A9A25",
-                    drawBorder: false,
-                },
-            },
-        ],
-    },
-});
 
 export default PlacementBreakDown;

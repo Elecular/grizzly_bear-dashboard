@@ -21,7 +21,7 @@ const ToolTipTableCell = (props) => {
                 {text}
             </div>
             <i id={id} className={"tim-icons icon-alert-circle-exc"} />
-            <Tooltip target={id} isOpen={isOpen}>
+            <Tooltip target={id} isOpen={isOpen} placement="right">
                 {tooltip}
             </Tooltip>
         </td>
