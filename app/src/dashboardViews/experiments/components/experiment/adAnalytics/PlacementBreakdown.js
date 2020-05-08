@@ -5,6 +5,7 @@ import Select from "react-select";
 import { getValueFromObject } from "utils/objectUtils";
 import { variationColors, positiveColor, negativeColor } from "utils/constants";
 import ToolTipTableCell from "../ToolTipTableCell";
+import AdStats from "models/AdStats";
 
 const metricOptions = [
     {
@@ -27,11 +28,13 @@ const metricOptions = [
 
 const PlacementBreakDown = (props) => {
     const { stats, environment, segment } = props;
-
     const [metricOption, setMetricOption] = React.useState(metricOptions[2]);
-    const variations = stats.getVariations();
-    const metrics = stats.getAdMetrics(environment, segment);
-    const placementMetrics = stats.getPlacementMetrics(environment, segment);
+
+    const adStats = AdStats.Instantiate(stats);
+    const variations = adStats.getVariations();
+    const metrics = adStats.getAdDataset(environment, segment);
+    const placementMetrics = adStats.getPlacementDataset(environment, segment);
+
     console.log(placementMetrics);
     return (
         <div>
@@ -128,7 +131,7 @@ const MetricRow = (props) => {
             value = (
                 getValueFromObject(
                     placementMetrics,
-                    [placementId, "fraction", metricOption.value, variation],
+                    [placementId, "normalized", metricOption.value, variation],
                     0,
                 ) * 100
             ).toFixed(2);
@@ -187,7 +190,7 @@ const graphData = (variations, placementMetrics, metricOption) => ({
                         placementMetrics,
                         [
                             placementId,
-                            "fraction",
+                            "normalized",
                             metricOption.value,
                             variation,
                         ],

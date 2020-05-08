@@ -1,7 +1,25 @@
 import { get, post } from "./request";
 
-const experimentsUri = process.env.REACT_APP_EXPERIMENTS_SERVICE;
+/**
+ * This is the response from getExperiment
+@typedef {{
+    _id: {
+        projectId: String,
+        experimentName: String
+    },
+    projectId: String,
+    startTime: number,
+    endTime: number,
+    variations: [{
+        controlGroup: boolean,
+        normalizedTrafficAmount: number,
+        variables: Array<Object>,
+        variationName: String
+    }]
+}} Experiment
+*/
 
+const experimentsUri = process.env.REACT_APP_EXPERIMENTS_SERVICE;
 if (!experimentsUri) {
     throw new Error(
         "REACT_APP_EXPERIMENTS_SERVICE environment variable is not passed",
@@ -42,11 +60,22 @@ export const getExperiments = async (projectId, authToken) => {
     );
 };
 
+/**
+ *
+ * Gets experiment
+ * @async
+ * @param {string} projectId
+ * @param {string} experimentName
+ * @param {string} authToken
+ * @return {Promise<Experiment>}
+ */
 export const getExperiment = async (projectId, experimentName, authToken) => {
-    return await get(
-        `${experimentsUri}/projects/${projectId}/experiments/${experimentName}`,
-        authToken,
-    );
+    return (
+        await get(
+            `${experimentsUri}/projects/${projectId}/experiments/${experimentName}`,
+            authToken,
+        )
+    )[0];
 };
 
 /**

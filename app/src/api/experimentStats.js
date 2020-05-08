@@ -1,14 +1,30 @@
 /**
- * This API is used for getting experiment metrics.
+ * This API is used for getting experiment stats.
  */
 import { getExperiment } from "api/experiments";
 import { get } from "./request";
 import ExperimentStats from "models/ExperimentStats";
+import "api/experiments"; //Importing typedefs
 
-const userActivityUri = process.env.REACT_APP_USER_ACTIVITY_SERVICE;
+/**
+ * This is the response from getExperimentStats
+@typedef {{
+    environment: String,
+    experimentName: String,
+    projectId: String,
+    variations: Object.<string, {
+        segments: Object.<string, 
+            Object.<string, ({
+                count: number,
+                amount: number
+            }|number)>
+        >
+    }>
+}} UserActivityStats
+*/
 
 const environments = ["dev", "stage", "prod"];
-
+const userActivityUri = process.env.REACT_APP_USER_ACTIVITY_SERVICE;
 if (!userActivityUri) {
     throw new Error(
         "REACT_APP_EXPERIMENTS_SERVICE environment variable is not passed",
@@ -26,7 +42,7 @@ export default async function (projectId, experiment, authToken) {
     try {
         const environmentStats = await Promise.all(
             environments.map((environment) =>
-                getExperimentStats(
+                getUserActivityStats(
                     projectId,
                     experiment,
                     environment,
@@ -34,9 +50,11 @@ export default async function (projectId, experiment, authToken) {
                 ),
             ),
         );
-        const experimentInfo = (
-            await getExperiment(projectId, experiment, authToken)
-        )[0];
+        const experimentInfo = await getExperiment(
+            projectId,
+            experiment,
+            authToken,
+        );
         return new ExperimentStats(experimentInfo, environmentStats);
     } catch (err) {
         console.log(err);
@@ -45,14 +63,16 @@ export default async function (projectId, experiment, authToken) {
 }
 
 /**
+ *
  * Gets all experiments owned by this user in the given project
- * @param {string} authToken
- * @param {string} projectId
- * @param {string} experimentName
- * @param {string} environment
- * @returns {Promise<Array<Object>>}
+ * @async
+ * @param {String} authToken
+ * @param {String} projectId
+ * @param {String} experimentName
+ * @param {String} environment
+ * @returns {Promise<UserActivityStats>}
  */
-const getExperimentStats = async (
+const getUserActivityStats = async (
     projectId,
     experimentName,
     environment,

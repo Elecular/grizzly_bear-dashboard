@@ -4,12 +4,14 @@ import { variationColors, positiveColor, negativeColor } from "utils/constants";
 import { Bar } from "react-chartjs-2";
 import ToolTipTableCell from "../ToolTipTableCell";
 import { getValueFromObject } from "utils/objectUtils";
+import AdStats from "models/AdStats";
 
 const AdResults = (props) => {
     const { stats, environment, segment } = props;
 
-    const variations = stats.getVariations();
-    const metrics = stats.getAdMetrics(environment, segment);
+    const adStats = AdStats.Instantiate(stats);
+    const variations = adStats.getVariations();
+    const metrics = adStats.getAdDataset(environment, segment);
 
     return (
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -93,7 +95,7 @@ const AdResults = (props) => {
                                     data: variations.map((variation) =>
                                         (
                                             getValueFromObject(metrics, [
-                                                "fraction",
+                                                "normalized",
                                                 "conversions",
                                                 variation,
                                             ]) * 100
@@ -120,7 +122,7 @@ const MetricRow = (props) => {
             ? (
                   getValueFromObject(
                       metrics,
-                      ["fraction", metricName, variation],
+                      ["normalized", metricName, variation],
                       0,
                   ) * 100
               ).toFixed(2)
