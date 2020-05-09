@@ -20,7 +20,7 @@ const graphData = (stats, environment, segment) => {
     return {
         datasets: [
             {
-                label: "% Converted Sessions",
+                label: "Converted Sessions %",
                 data: variations.map((variation) =>
                     (metrics.get("conversions", variation, true) * 100).toFixed(
                         2,
@@ -51,7 +51,7 @@ const graphOptions = {
             {
                 scaleLabel: {
                     display: true,
-                    labelString: "% Converted Sessions",
+                    labelString: "Converted Sessions %",
                 },
                 ticks: {
                     beginAtZero: true,

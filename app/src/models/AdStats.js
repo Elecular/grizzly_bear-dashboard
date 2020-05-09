@@ -146,7 +146,7 @@ class AdStats extends ExperimentStats {
                 assignKeyToObject(
                     adMetrics,
                     ["normalized", metricDef.name, variation],
-                    metricValue / sessions,
+                    sessions === 0 ? 0 : metricValue / sessions,
                 );
             }
         }
@@ -217,7 +217,7 @@ class AdStats extends ExperimentStats {
                     assignKeyToObject(
                         placementMetrics,
                         [placementId, "normalized", metricDef.name, variation],
-                        metricValue / sessions,
+                        sessions === 0 ? 0 : metricValue / sessions,
                     );
                 }
             }
@@ -296,7 +296,9 @@ class AdStats extends ExperimentStats {
                 assignKeyToObject(
                     diff,
                     [metricDef.name, variation],
-                    (metricValue - baseMetric) / baseMetric,
+                    baseMetric === 0
+                        ? 0
+                        : (metricValue - baseMetric) / baseMetric,
                 );
             }
         }
