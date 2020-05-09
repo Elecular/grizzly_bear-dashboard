@@ -138,14 +138,13 @@ const MetricRow = (props) => {
             metricOption.value,
             variation,
         );
-        if (!isFinite(diff)) diff = 0;
         const absoluteDiff = Math.abs(diff);
 
         const color = diff > 0 ? positiveColor : negativeColor;
 
         return (
             <td key={variation}>
-                {`${value}${metricOption.useFraction ? "%" : ""}`}
+                {`${value}${metricOption.normalized ? "%" : ""}`}
                 {absoluteDiff > 0.01 && (
                     <>
                         <i

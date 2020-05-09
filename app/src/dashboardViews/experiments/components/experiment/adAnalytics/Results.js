@@ -111,12 +111,14 @@ const MetricRow = (props) => {
     return variations.map((variation) => {
         //Calculating metric value
         let value = dataset.get(metricName, variation, normalized);
-        if (normalized) value = (value * 100).toFixed(2);
-        else value = Math.round(value);
+        if (normalized) {
+            value = (value * 100).toFixed(2);
+        } else {
+            value = Math.round(value);
+        }
 
         //Calculating diff from control group
         let diff = dataset.getDiff(metricName, variation);
-        if (!isFinite(diff)) diff = 0;
         const absoluteDiff = Math.abs(diff);
 
         const color = diff > 0 ? positiveColor : negativeColor;
