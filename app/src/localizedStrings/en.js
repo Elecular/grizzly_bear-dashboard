@@ -4,11 +4,6 @@ export default {
         addExperiment: "Add Experiment",
     },
 
-    experimentsTab: {
-        addExperiment: "Add Experiment",
-        noExperimentsFound: "You do not have any experiments yet!",
-    },
-
     addExperimentsTab: {
         title: "New Experiment",
         subTitle: "Understand user behaviour on a deeper level",
@@ -71,6 +66,8 @@ export default {
     },
 
     experimentsTab: {
+        addExperiment: "Add Experiment",
+        noExperimentsFound: "You do not have any experiments yet!",
         loading: "Loading",
         loadingMessage: "The experiment is loading. Please wait...",
         error: "Error",

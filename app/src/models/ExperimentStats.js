@@ -42,6 +42,21 @@ This is an example sessions metric. This means that 10 sessions happened in vari
  */
 
 /**
+ * Please look at typedef Metric in models/ExperimentStats before look into this
+ *
+ * A dataset is a collection of metrics
+ * The following is basically definiing how to calculate a dataset based on list of metrics.
+ * name: Name of the  metric
+ * id: The metric id it corresponds to
+ * dimension: The dimension of the metric that should be used for calculating the metric
+ * @typedef {Array<{
+       name: String,
+       id: String,
+       dimension: String
+ }>} DatasetDefinition
+ */
+
+/**
  * @typedef {import("../api/experiments").Experiment} Experiment
  */
 
@@ -94,6 +109,72 @@ class ExperimentStats {
     }
 
     /**
+     * A Dataset is a collection of metrics
+     * @param {string} environment
+     * @param {string} segment
+     * @param {DatasetDefinition} datasetDefinition Dataset definition
+     */
+    getDataset(environment, segment, datasetDefinition) {
+        const metrics = this.getMetrics(environment, segment);
+        const variations = this.getVariations();
+
+        let dataset = {};
+        for (const variation of variations) {
+            const sessions = metrics.get(sessionsMetricId, variation);
+            assignKeyToObject(dataset, [sessionsMetricId, variation], sessions);
+
+            for (const metricDef of datasetDefinition) {
+                const metricValue = metrics.get(
+                    metricDef.id,
+                    variation,
+                    metricDef.dimension,
+                );
+                assignKeyToObject(
+                    dataset,
+                    [metricDef.name, variation],
+                    metricValue,
+                );
+                assignKeyToObject(
+                    dataset,
+                    ["normalized", metricDef.name, variation],
+                    sessions === 0 ? 0 : metricValue / sessions,
+                );
+            }
+        }
+        dataset.diff = this._getDatasetDiff(dataset, datasetDefinition);
+        return dataset;
+    }
+
+    _getDatasetDiff(dataset, datasetDefinition) {
+        const variations = this.getVariations();
+        const controlGroup = this.getControlGroup();
+        let diff = {};
+
+        for (const metricDef of datasetDefinition) {
+            const baseMetric = getValueFromObject(
+                dataset,
+                ["normalized", metricDef.name, controlGroup],
+                0,
+            );
+            for (const variation of variations) {
+                const metricValue = getValueFromObject(
+                    dataset,
+                    ["normalized", metricDef.name, variation],
+                    0,
+                );
+                assignKeyToObject(
+                    diff,
+                    [metricDef.name, variation],
+                    baseMetric === 0
+                        ? 0
+                        : (metricValue - baseMetric) / baseMetric,
+                );
+            }
+        }
+        return diff;
+    }
+
+    /**
      * Gets a list of metrics for the given environment and segment
      * @param {String} environment 
      * @param {String} segment
@@ -107,7 +188,6 @@ class ExperimentStats {
 
         const variations = this.getVariations();
         const metricIds = this.getMetricIds();
-
         for (const variation of variations) {
             for (const metricId of metricIds) {
                 const metricValue = getValueFromObject(

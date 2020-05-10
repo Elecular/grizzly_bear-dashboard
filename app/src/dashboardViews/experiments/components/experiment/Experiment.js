@@ -5,6 +5,7 @@ import AuthorizationContext from "auth/authorizationContext";
 import { Card, CardHeader, CardBody, Collapse } from "reactstrap";
 import { Redirect } from "react-router-dom";
 import AdAnalytics from "./adAnalytics/Ads";
+import TransactionAnalytics from "./transactionAnalytics/Transaction";
 import strings from "localizedStrings/strings";
 const translations = strings.experimentsTab;
 
@@ -51,12 +52,15 @@ const Experiment = (props) => {
                 header={translations.experimentInfo}
                 open={true}
             ></CollapseCard>
-            <CollapseCard header={translations.adAnalytics.name} open={true}>
-                <AdAnalytics experimentStats={experimentStats} />
+            <CollapseCard header={translations.adAnalytics.name}>
+                {/*<AdAnalytics experimentStats={experimentStats} />*/}
             </CollapseCard>
             <CollapseCard
                 header={translations.transactionAnalytics.name}
-            ></CollapseCard>
+                open={true}
+            >
+                <TransactionAnalytics experimentStats={experimentStats} />
+            </CollapseCard>
             <CollapseCard
                 header={translations.customAnalytics.name}
             ></CollapseCard>

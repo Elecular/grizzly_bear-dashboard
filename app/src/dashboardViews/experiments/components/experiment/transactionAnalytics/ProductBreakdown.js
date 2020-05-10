@@ -3,37 +3,37 @@ import { Table, Label } from "reactstrap";
 import Select from "react-select";
 import { variationColors, positiveColor, negativeColor } from "utils/constants";
 import ToolTipTableCell from "../ToolTipTableCell";
-import PlacementBreakDownGraph from "./PlacementBreakdownGraph";
+import ProductBreakDownGraph from "./ProductBreakdownGraph";
 
 /**
  * These are the different metrics the users can see
  */
 const metricOptions = [
     {
-        value: "adImpressions",
-        label: "Ad Impressions",
-        graphLabel: "# Ad Impressions Per Sessions",
-    },
-    {
-        value: "adClicks",
-        label: "Ad Clicks",
-        graphLabel: "# Ad Clicks Per Sessions",
+        value: "revenue",
+        label: "Revenue",
+        graphLabel: "Revenue ($)",
+        decimalPoints: 2,
+        prefix: "$",
     },
     {
         value: "conversions",
         label: "Converted Sessions %",
         graphLabel: "Converted Sessions %",
         normalized: true,
+        decimalPoints: 2,
+        suffix: "%",
     },
 ];
 
-const PlacementBreakDown = (props) => {
+const ProductBreakDown = (props) => {
     const { stats, environment, segment } = props;
-    const [metricOption, setMetricOption] = React.useState(metricOptions[2]);
+    const [metricOption, setMetricOption] = React.useState(metricOptions[1]);
 
     const variations = stats.getVariations();
     const metrics = stats.getMetrics(environment, segment);
-    const placementIds = stats.getPlacementIds(environment, segment);
+    const productIds = stats.getProductIds(environment, segment);
+    console.log(metricOption);
     return (
         <div>
             <div style={{ width: "15rem" }}>
@@ -52,7 +52,7 @@ const PlacementBreakDown = (props) => {
                     <Table>
                         <thead className="text-primary">
                             <tr>
-                                <th>Placement Id</th>
+                                <th>Product Id</th>
                                 {variations.map((variation, index) => (
                                     <th key={variation}>
                                         <i
@@ -70,7 +70,7 @@ const PlacementBreakDown = (props) => {
                         <tbody>
                             <tr>
                                 <ToolTipTableCell
-                                    id="placement-sessions-info-icon"
+                                    id="product-sessions-info-icon"
                                     text="Sessions"
                                     tooltip="Number of sessions"
                                 />
@@ -82,11 +82,11 @@ const PlacementBreakDown = (props) => {
                                     </td>
                                 ))}
                             </tr>
-                            {placementIds.map((placementId) => (
-                                <tr key={placementId}>
-                                    <td>{`${placementId}`}</td>
+                            {productIds.map((productId) => (
+                                <tr key={productId}>
+                                    <td>{`${productId}`}</td>
                                     <MetricRow
-                                        placementId={placementId}
+                                        productId={productId}
                                         metricOption={metricOption}
                                         stats={stats}
                                         environment={environment}
@@ -98,14 +98,12 @@ const PlacementBreakDown = (props) => {
                     </Table>
                 </div>
                 <div style={{ width: "30rem" }}>
-                    {
-                        <PlacementBreakDownGraph
-                            metricOption={metricOption}
-                            stats={stats}
-                            environment={environment}
-                            segment={segment}
-                        />
-                    }
+                    <ProductBreakDownGraph
+                        metricOption={metricOption}
+                        stats={stats}
+                        environment={environment}
+                        segment={segment}
+                    />
                 </div>
             </div>
         </div>
@@ -113,28 +111,27 @@ const PlacementBreakDown = (props) => {
 };
 
 const MetricRow = (props) => {
-    const { placementId, metricOption, stats, environment, segment } = props;
+    const { productId, metricOption, stats, environment, segment } = props;
 
     const variations = stats.getVariations();
-    const placementDataset = stats.getPlacementDataset(environment, segment);
+    const productDataset = stats.getProductDataset(environment, segment);
 
     return variations.map((variation) => {
         //Calculating metric value
-        let value = placementDataset.get(
-            placementId,
+        let value = productDataset.get(
+            productId,
             metricOption.value,
             variation,
             metricOption.normalized,
         );
         if (metricOption.normalized) {
-            value = (value * 100).toFixed(2);
-        } else {
-            value = Math.round(value);
+            value = value * 100;
         }
+        value = value.toFixed(metricOption.decimalPoints);
 
         //Calculating diff from control group
-        let diff = placementDataset.getDiff(
-            placementId,
+        let diff = productDataset.getDiff(
+            productId,
             metricOption.value,
             variation,
         );
@@ -144,7 +141,9 @@ const MetricRow = (props) => {
 
         return (
             <td key={variation}>
-                {`${value}${metricOption.normalized ? "%" : ""}`}
+                {`${metricOption.prefix || ""}${value}${
+                    metricOption.suffix || ""
+                }`}
                 {absoluteDiff > 0.01 && (
                     <>
                         <i
@@ -173,4 +172,4 @@ const MetricRow = (props) => {
     });
 };
 
-export default PlacementBreakDown;
+export default ProductBreakDown;

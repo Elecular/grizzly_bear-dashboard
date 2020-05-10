@@ -1,16 +1,16 @@
-import { assignKeyToObject, getValueFromObject } from "utils/objectUtils";
-import ExperimentStats, { sessionsMetricId } from "./ExperimentStats";
+import { getValueFromObject } from "utils/objectUtils";
+import ExperimentStats from "./ExperimentStats";
 
 /**
- * Please look at typedef Metric in models/ExperimentStats before look into this
+ * Please look at typedef Metric  and DatasetDefinition in models/ExperimentStats before look into this
  *
- * An ad metric is derived from metric. These ad metrics definitions are used for creating an AdDataset. You can look at the typedef below
- * The following is basically definiing how to calculdate an ad metric based on a metric.
+ * This definition is used for creating an AdDataset. You can look at the typedef below
+ * The following is basically definiing how to calculdate an ad dataset based on the list of metrics
  * name: Name of the ad metric
  * id: The metric id it corresponds to
  * dimension: The dimension of the metric that should be used for calculating the ad metric
  */
-const adMetricDefinitions = [
+const adDatasetDefinition = [
     {
         /**
          * This is the total amount of ad impressions
@@ -81,8 +81,7 @@ const adMetricDefinitions = [
  */
 
 /**
- * Placement Metrics are derived from metrics.
- * Please look at typedef Metric in models/ExperimentStats before look into this
+ * Placement Dataset are derived from metrics.
  *
  * Ad placements metrics are stored under the following metric ids
  * ads/impression/<placementId>
@@ -116,42 +115,15 @@ class AdStats extends ExperimentStats {
      * @returns {{
         data: AdDataset,
         get: (adMetricName: string, variation: string, normalized: boolean) => number,
-        getDiff: (adMetricName: string, variation: string)
+        getDiff: (adMetricName: string, variation: string) => number
     }}
      */
     getAdDataset(environment, segment) {
-        const metrics = this.getMetrics(environment, segment);
-        const variations = this.getVariations();
-
-        let adMetrics = {};
-        for (const variation of variations) {
-            const sessions = metrics.get(sessionsMetricId, variation);
-            assignKeyToObject(
-                adMetrics,
-                [sessionsMetricId, variation],
-                sessions,
-            );
-            //Getting and storing all ad metrics for each variation
-            for (const metricDef of adMetricDefinitions) {
-                const metricValue = metrics.get(
-                    metricDef.id,
-                    variation,
-                    metricDef.dimension,
-                );
-                assignKeyToObject(
-                    adMetrics,
-                    [metricDef.name, variation],
-                    metricValue,
-                );
-                assignKeyToObject(
-                    adMetrics,
-                    ["normalized", metricDef.name, variation],
-                    sessions === 0 ? 0 : metricValue / sessions,
-                );
-            }
-        }
-
-        adMetrics.diff = this._getAdMetricsDiff(adMetrics);
+        let adMetrics = this.getDataset(
+            environment,
+            segment,
+            adDatasetDefinition,
+        );
         return {
             data: adMetrics,
             //Helper method for extracting ad metrics
@@ -177,56 +149,36 @@ class AdStats extends ExperimentStats {
     }
 
     /**
-     * Gets ads data for individual placements
+     * Gets ads dataset for individual placements
      * @param {string} environment
      * @param {string} segment
-     * @returns {Object.<string, AdDataset>}
+     * @returns {{
+        data: Object.<string, AdDataset>,
+        get: (placementId: String, adMetricName: String, variation: Name, normalized: boolean) => number,
+        getDiff: (placementId: String, adMetricName: String, variation: Name) => number,
+    }}
      */
     getPlacementDataset(environment, segment) {
-        const metrics = this.getMetrics(environment, segment);
-        const variations = this.getVariations();
         const placementIds = this.getPlacementIds(environment, segment);
-
-        let placementMetrics = {};
+        let placementDataset = {};
 
         for (const placementId of placementIds) {
-            for (const variation of variations) {
-                //Getting and storing the session metric for each placement id and variation
-                const sessions = metrics.get(sessionsMetricId, variation);
-                assignKeyToObject(
-                    placementMetrics,
-                    [placementId, sessionsMetricId, variation],
-                    sessions,
-                );
-                //Getting and storing all ad metrics for each placement id and variation
-                for (const metricDef of adMetricDefinitions) {
-                    const metricId = this._placementToMetricId(
-                        placementId,
-                        metricDef,
-                    );
-                    const metricValue = metrics.get(
-                        metricId,
-                        variation,
-                        metricDef.dimension,
-                    );
-                    assignKeyToObject(
-                        placementMetrics,
-                        [placementId, metricDef.name, variation],
-                        metricValue,
-                    );
-                    assignKeyToObject(
-                        placementMetrics,
-                        [placementId, "normalized", metricDef.name, variation],
-                        sessions === 0 ? 0 : metricValue / sessions,
-                    );
-                }
-            }
-            placementMetrics[placementId]["diff"] = this._getAdMetricsDiff(
-                placementMetrics[placementId],
+            const placementDatasetDefinition = adDatasetDefinition.map(
+                (metricDef) => ({
+                    name: metricDef.name,
+                    id: this._placementToMetricId(placementId, metricDef),
+                    dimension: metricDef.dimension,
+                }),
+            );
+            placementDataset[placementId] = this.getDataset(
+                environment,
+                segment,
+                placementDatasetDefinition,
             );
         }
+
         return {
-            data: placementMetrics,
+            data: placementDataset,
             //Helper method for extracting ad metrics
             get: function (
                 placementId,
@@ -274,35 +226,6 @@ class AdStats extends ExperimentStats {
                     .filter((placementId) => placementId !== undefined),
             ),
         ].sort();
-    }
-
-    _getAdMetricsDiff(adMetrics) {
-        const variations = this.getVariations();
-        const controlGroup = this.getControlGroup();
-        let diff = {};
-
-        for (const metricDef of adMetricDefinitions) {
-            const baseMetric = getValueFromObject(
-                adMetrics,
-                ["normalized", metricDef.name, controlGroup],
-                0,
-            );
-            for (const variation of variations) {
-                const metricValue = getValueFromObject(
-                    adMetrics,
-                    ["normalized", metricDef.name, variation],
-                    0,
-                );
-                assignKeyToObject(
-                    diff,
-                    [metricDef.name, variation],
-                    baseMetric === 0
-                        ? 0
-                        : (metricValue - baseMetric) / baseMetric,
-                );
-            }
-        }
-        return diff;
     }
 
     _isPlacementId(metricId) {
