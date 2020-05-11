@@ -29,24 +29,28 @@ const About = React.memo((props) => {
 const BasicInfo = (props) => (
     <div>
         <div style={{ marginTop: "2rem", marginBottom: "0.75rem" }}>
-            <h6>Experiment Name</h6>
+            <h6 className="text-muted">Experiment Name :</h6>
             <p>{props.info._id.experimentName}</p>
         </div>
         <div style={{ marginTop: "2rem", marginBottom: "0.75rem" }}>
-            <h6>Status</h6>
+            <h6 className="text-muted">Status :</h6>
             <StatusBadge
                 startTime={props.info.startTime}
                 endTime={props.info.endTime}
             />
         </div>
         <div style={{ marginTop: "2rem", marginBottom: "0.75rem" }}>
-            <h6>Date Range</h6>
+            <h6 className="text-muted">Date Range :</h6>
             <div style={{ display: "flex" }}>
                 <p style={{ marginRight: "0.75rem" }}>
                     {dateString(props.info.startTime)}
                 </p>
-                <p style={{ marginRight: "0.75rem" }}>to</p>
-                <p>{dateString(props.info.endTime)}</p>
+                <p style={{ marginRight: "0.75rem" }}>-</p>
+                <p>
+                    {props.info.endTime
+                        ? dateString(props.info.endTime)
+                        : "Endless"}
+                </p>
             </div>
         </div>
     </div>

@@ -69,8 +69,12 @@ const Experiment = (props) => {
     return (
         <div className="content">
             <ol className="breadcrumb bg-transparent">
-                <BreadcrumbItem>Experiments</BreadcrumbItem>
                 <BreadcrumbItem>
+                    <a className="link" href="dashboard/experiments">
+                        Experiments
+                    </a>
+                </BreadcrumbItem>
+                <BreadcrumbItem active>
                     {experimentStats.info._id.experimentName}
                 </BreadcrumbItem>
             </ol>

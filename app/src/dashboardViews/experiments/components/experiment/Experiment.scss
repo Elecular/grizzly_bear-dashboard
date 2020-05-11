@@ -3,3 +3,10 @@
         cursor: pointer;
     }
 }
+
+.link {
+    color: #ba54f5;
+    &:hover {
+        color: #e14eca
+    }
+}

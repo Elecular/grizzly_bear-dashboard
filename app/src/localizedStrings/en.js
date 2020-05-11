@@ -34,7 +34,8 @@ export default {
             invalidEndDate: "End date has to be after start date",
         },
         variationsComponent: {
-            subTitle: "Now, let's add different variations for your experiment",
+            subTitle:
+                "Now, let's setup different variations of your game you would like to test",
             variationName: "Variation Name",
             trafficPercentage: "Traffic %",
             addVariation: "Add Variation",
@@ -48,7 +49,8 @@ export default {
                 "There must be at least 2 variations in an experiment",
         },
         settingsComponent: {
-            subTitle: "Lastly, we can define your variations through settings",
+            subTitle:
+                "Settings will define how each of your variations will look and behave",
             settings: "Settings",
             addSetting: "Add Setting",
             enterValidSettingName:

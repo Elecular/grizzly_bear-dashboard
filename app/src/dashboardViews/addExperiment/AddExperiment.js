@@ -74,6 +74,7 @@ const AddExperiment = (props) => {
             variationSettings,
             project,
         );
+        setError(false);
         setLoading(true);
         setOpenModal(true);
         addExperiment(project._id, experiment, authToken)
@@ -122,13 +123,21 @@ const AddExperiment = (props) => {
                 openModal={openModal}
                 loading={loading}
                 error={error}
+                onClick={(error) => {
+                    if (!error) {
+                        window.location.href = "/dashboard/experiments";
+                    } else {
+                        setOpenModal(false);
+                        setLoading(false);
+                    }
+                }}
             />
         </div>
     );
 };
 
 const FeedbackModal = (props) => {
-    const { openModal, loading, error } = props;
+    const { openModal, loading, error, onClick } = props;
     return (
         <Modal isOpen={openModal} modalClassName="modal-black">
             <ModalBody
@@ -168,10 +177,12 @@ const FeedbackModal = (props) => {
                                 ? error
                                 : strings.addExperimentsTab.experimentIsCreated}
                         </p>
-                        <Button color={error ? "danger" : "success"} size="sm">
-                            {error
-                                ? strings.addExperimentsTab.close
-                                : strings.addExperimentsTab.showMe}
+                        <Button
+                            color={error ? "danger" : "success"}
+                            size="sm"
+                            onClick={() => onClick(error ? error : undefined)}
+                        >
+                            {strings.addExperimentsTab.close}
                         </Button>
                     </>
                 )}

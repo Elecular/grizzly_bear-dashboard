@@ -5,6 +5,7 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import PerfectScrollbar from "perfect-scrollbar";
 // react plugin for creating notifications over the dashboard
 import NotificationAlert from "react-notification-alert";
+import { Modal, ModalBody, Button } from "reactstrap";
 
 // core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
@@ -12,6 +13,9 @@ import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
 import logo from "assets/img/react-logo.png";
+
+//Modals
+import ShowProjectID from "dashboardModals/ShowProjectID";
 
 let ps;
 
@@ -23,9 +27,14 @@ class DashboardLayout extends React.Component {
             sidebarMini: true,
             opacity: 0,
             sidebarOpened: false,
+            isModalOpen: false,
+            modalOption: undefined,
         };
         //document.body.classList.toggle("sidebar-mini");
         //document.body.classList.toggle("white-content");
+
+        this.displayModal = this.displayModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
     }
 
     componentDidMount() {
@@ -146,6 +155,22 @@ class DashboardLayout extends React.Component {
         document.documentElement.classList.remove("nav-open");
     };
 
+    displayModal(option) {
+        this.setState({
+            ...this.state,
+            isModalOpen: true,
+            modalOption: option,
+        });
+    }
+
+    closeModal() {
+        this.setState({
+            ...this.state,
+            isModalOpen: false,
+            modalOption: undefined,
+        });
+    }
+
     render() {
         return (
             <div className="wrapper">
@@ -170,7 +195,7 @@ class DashboardLayout extends React.Component {
                     activeColor={this.state.activeColor}
                     logo={{
                         outterLink: "",
-                        text: "GAMEGRAM",
+                        text: "Game Gram",
                         imgSrc: logo,
                     }}
                     closeSidebar={this.closeSidebar}
@@ -187,6 +212,7 @@ class DashboardLayout extends React.Component {
                         sidebarOpened={this.state.sidebarOpened}
                         toggleSidebar={this.toggleSidebar}
                         displayOptions={true}
+                        showProjectId={() => this.displayModal("showProjectId")}
                     />
                     <Switch>
                         {this.getRoutes(routes)}
@@ -194,6 +220,24 @@ class DashboardLayout extends React.Component {
                     </Switch>
                     <Footer fluid />
                 </div>
+                <Modal
+                    isOpen={this.state.isModalOpen}
+                    toggle={this.closeModal}
+                    modalClassName="modal-black"
+                >
+                    <div className="modal-header">
+                        <button
+                            type="button"
+                            className="btn-link"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                            onClick={this.closeModal}
+                        >
+                            <i className="tim-icons icon-simple-remove"></i>
+                        </button>
+                    </div>
+                    <ShowProjectID onClose={this.closeModal} />
+                </Modal>
             </div>
         );
     }

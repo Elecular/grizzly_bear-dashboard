@@ -24,6 +24,10 @@ const login = async () => {
     return authToken;
 };
 
+export const logout = () => {
+    localStorage.removeItem("authToken");
+};
+
 export const forceLogin = () => {
     auth0.loginWithRedirect({
         redirect_uri: window.location.origin,

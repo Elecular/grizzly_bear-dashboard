@@ -17,7 +17,7 @@ const ExperimentsTable = (props) => {
             </thead>
             <tbody>
                 {experiments
-                    .sort((a, b) => a.startTime - b.startTime)
+                    .sort((a, b) => b.startTime - a.startTime)
                     .map((experiment) => (
                         <tr
                             key={experiment._id.experimentName}
