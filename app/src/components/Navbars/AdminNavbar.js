@@ -2,7 +2,6 @@
 import React from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
-
 // reactstrap components
 import {
   Button,
@@ -134,44 +133,40 @@ class AdminNavbar extends React.Component {
               <span className="navbar-toggler-bar navbar-kebab" />
               <span className="navbar-toggler-bar navbar-kebab" />
             </button>
-            { this.props.displayOptions && 
-              <Collapse navbar isOpen={this.state.collapseOpen}>
-                <Nav className="ml-auto" navbar>
-                  <UncontrolledDropdown nav>
-                    <DropdownToggle
-                      caret
-                      color="default"
-                      data-toggle="dropdown"
-                      nav
-                      onClick={e => e.preventDefault()}
-                    >
-                      <div>
-                        <i className="fa fa-user-circle"></i>
-                      </div>
-                    </DropdownToggle>
-                    <DropdownMenu className="dropdown-navbar" right tag="ul">
-                      <NavLink tag="li" onClick={this.props.showProjectId}>
-                        <DropdownItem className="nav-item">Show Project ID</DropdownItem>
-                      </NavLink>
-                      <NavLink tag="li">
-                        <DropdownItem className="nav-item">Download Unity Package</DropdownItem>
-                      </NavLink>
-                      <DropdownItem divider tag="li" />
-                      <NavLink 
+            <Collapse navbar isOpen={this.state.collapseOpen}>
+              <Nav className="ml-auto" navbar>
+                <UncontrolledDropdown nav>
+                  <DropdownToggle
+                    caret
+                    color="default"
+                    data-toggle="dropdown"
+                    nav
+                  >
+                    <i className="tim-icons icon-single-02" />
+                    <p className="d-lg-none">Profile</p>
+                  </DropdownToggle>
+                  <DropdownMenu className="dropdown-navbar" right tag="ul">
+                    <NavLink tag="li" onClick={this.props.showProjectId}>
+                      <DropdownItem className="nav-item">Show Project ID</DropdownItem>
+                    </NavLink>
+                    <NavLink tag="li">
+                      <DropdownItem className="nav-item">Download Unity SDK</DropdownItem>
+                    </NavLink>
+                    <DropdownItem divider tag="li" />
+                    <NavLink
                         tag="li"
                         onClick={() => {
                           logout();
                           window.location.href = "https://google.com"
                         }}
                       >
-                        <DropdownItem className="nav-item">Log out</DropdownItem>
-                      </NavLink>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                  <li className="separator d-lg-none" />
-                </Nav>
-              </Collapse>
-            }
+                      <DropdownItem className="nav-item">Log out</DropdownItem>
+                    </NavLink>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+                <li className="separator d-lg-none" />
+              </Nav>
+            </Collapse>
           </Container>
         </Navbar>
         <Modal
