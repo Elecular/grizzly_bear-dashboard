@@ -7,7 +7,7 @@ import ResultsGraph from "./ResultsGraph";
 const AdResults = (props) => {
     const { stats, environment, segment } = props;
     return (
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ display: "flex" }}>
             <div style={{ flexGrow: 1, marginRight: "3rem" }}>
                 <Table>
                     <thead className="text-primary">

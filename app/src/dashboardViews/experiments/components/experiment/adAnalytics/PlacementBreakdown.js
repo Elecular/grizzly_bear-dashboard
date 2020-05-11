@@ -47,7 +47,7 @@ const PlacementBreakDown = (props) => {
                     onChange={setMetricOption}
                 />
             </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", marginTop: "1.5rem" }}>
                 <div style={{ flexGrow: 1, marginRight: "3rem" }}>
                     <Table>
                         <thead className="text-primary">

@@ -33,7 +33,7 @@ const ProductBreakDown = (props) => {
     const variations = stats.getVariations();
     const metrics = stats.getMetrics(environment, segment);
     const productIds = stats.getProductIds(environment, segment);
-    console.log(metricOption);
+
     return (
         <div>
             <div style={{ width: "15rem" }}>
@@ -47,7 +47,7 @@ const ProductBreakDown = (props) => {
                     onChange={setMetricOption}
                 />
             </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", marginTop: "1.5rem" }}>
                 <div style={{ flexGrow: 1, marginRight: "3rem" }}>
                     <Table>
                         <thead className="text-primary">

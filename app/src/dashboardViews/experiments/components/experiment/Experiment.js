@@ -4,10 +4,29 @@ import getExperimentStats from "api/experimentStats";
 import AuthorizationContext from "auth/authorizationContext";
 import { Card, CardHeader, CardBody, Collapse } from "reactstrap";
 import { Redirect } from "react-router-dom";
+import About from "./about/About";
 import AdAnalytics from "./adAnalytics/Ads";
 import TransactionAnalytics from "./transactionAnalytics/Transaction";
+import CustomEventAnalytics from "./customEventAnalytics/CustomEvents";
 import strings from "localizedStrings/strings";
+import { Nav, NavItem, NavLink } from "reactstrap";
+import { Row, Col, Label, BreadcrumbItem } from "reactstrap";
+import Select from "react-select";
+
 const translations = strings.experimentsTab;
+const defaultEnvironment = "prod";
+const defaultSegment = "all";
+
+const tabs = [
+    { value: "About", label: "About", displayHeaderInput: false },
+    { value: "Ads", label: "Ads", displayHeaderInput: true },
+    { value: "Transactions", label: "Transactions", displayHeaderInput: true },
+    {
+        value: "Custom Events",
+        label: "Custom Events",
+        displayHeaderInput: true,
+    },
+];
 
 const Experiment = (props) => {
     const { authToken, project } = useContext(AuthorizationContext);
@@ -16,27 +35,20 @@ const Experiment = (props) => {
         : undefined;
 
     const [experimentStats, setExperimentStats] = useState(undefined);
+    const [activeTab, setActiveTab] = useState(undefined);
+    const [selectedSegment, setSegment] = React.useState(undefined);
+    const [selectedEnvironment, setEnvironment] = React.useState(undefined);
     const [error, SetError] = useState(false);
 
     React.useEffect(() => {
         if (!experiment) return;
         getExperimentStats(project._id, experiment, authToken)
             .then(setExperimentStats)
-            .catch((_) => {
-                SetError(true);
-            });
+            .catch((_) => SetError(true));
     }, [project._id, experiment, authToken]);
 
     if (!experiment) {
         return <Redirect to="dashboard/experiments" />;
-    }
-    if (!experimentStats) {
-        return (
-            <Message
-                title={translations.loading}
-                message={translations.loadingMessage}
-            />
-        );
     }
     if (error) {
         return (
@@ -46,25 +58,202 @@ const Experiment = (props) => {
             />
         );
     }
+    if (!experimentStats) {
+        return (
+            <Message
+                title={translations.loading}
+                message={translations.loadingMessage}
+            />
+        );
+    }
     return (
         <div className="content">
-            <CollapseCard
-                header={translations.experimentInfo}
-                open={true}
-            ></CollapseCard>
-            <CollapseCard header={translations.adAnalytics.name}>
-                {/*<AdAnalytics experimentStats={experimentStats} />*/}
-            </CollapseCard>
-            <CollapseCard
-                header={translations.transactionAnalytics.name}
-                open={true}
-            >
-                <TransactionAnalytics experimentStats={experimentStats} />
-            </CollapseCard>
-            <CollapseCard
-                header={translations.customAnalytics.name}
-            ></CollapseCard>
+            <ol className="breadcrumb bg-transparent">
+                <BreadcrumbItem>Experiments</BreadcrumbItem>
+                <BreadcrumbItem>
+                    {experimentStats.info._id.experimentName}
+                </BreadcrumbItem>
+            </ol>
+            <Card>
+                <CardHeader>
+                    <Header
+                        activeTab={activeTab}
+                        environment={selectedEnvironment}
+                        segment={selectedSegment}
+                        onActiveTabChange={setActiveTab}
+                        onEnvironmentChange={setEnvironment}
+                        onSegmentChange={setSegment}
+                        experimentStats={experimentStats}
+                    />
+                </CardHeader>
+                <CardBody
+                    style={{
+                        paddingLeft: "2rem",
+                        paddingRight: "2rem",
+                    }}
+                >
+                    {activeTab == "About" && <About stats={experimentStats} />}
+                    {activeTab == "Ads" && (
+                        <AdAnalytics
+                            experimentStats={experimentStats}
+                            environment={selectedEnvironment}
+                            segment={selectedSegment}
+                        />
+                    )}
+                    {activeTab == "Transactions" && (
+                        <TransactionAnalytics
+                            experimentStats={experimentStats}
+                            environment={selectedEnvironment}
+                            segment={selectedSegment}
+                        />
+                    )}
+                    {activeTab == "Custom Events" && (
+                        <CustomEventAnalytics
+                            experimentStats={experimentStats}
+                            environment={selectedEnvironment}
+                            segment={selectedSegment}
+                        />
+                    )}
+                </CardBody>
+            </Card>
         </div>
+    );
+};
+
+const Header = (props) => {
+    const {
+        activeTab,
+        environment,
+        segment,
+        onActiveTabChange,
+        onEnvironmentChange,
+        onSegmentChange,
+        experimentStats,
+    } = props;
+
+    const environments = experimentStats
+        ? experimentStats.getEnvironments()
+        : [];
+    const segments = experimentStats ? experimentStats.getSegments() : [];
+
+    React.useEffect(() => {
+        if (!environment) {
+            //Setting the default environment
+            onEnvironmentChange(
+                environments.length === 0 ||
+                    environments.includes(defaultEnvironment)
+                    ? defaultEnvironment
+                    : environments[0],
+            );
+        }
+
+        if (!segment) {
+            //Setting the default segment
+            onSegmentChange(defaultSegment);
+        }
+
+        if (!activeTab) {
+            onActiveTabChange(tabs[0].label);
+        }
+    }, [
+        activeTab,
+        environment,
+        environments,
+        onActiveTabChange,
+        onEnvironmentChange,
+        onSegmentChange,
+        segment,
+        segments,
+    ]);
+
+    return (
+        <Row>
+            <Col xs={"8"}>
+                <div className="nav-tabs-navigation">
+                    <div className="nav-tabs-wrapper">
+                        <Nav
+                            tabs
+                            style={{
+                                paddingLeft: "0px",
+                                paddingRight: "0px",
+                            }}
+                        >
+                            {tabs.map((tab) => (
+                                <NavItem key={tab.value}>
+                                    <NavLink
+                                        className={`${
+                                            activeTab === tab.value
+                                                ? "active"
+                                                : ""
+                                        } clickable`}
+                                        onClick={() =>
+                                            onActiveTabChange(tab.value)
+                                        }
+                                    >
+                                        {tab.label}
+                                    </NavLink>
+                                </NavItem>
+                            ))}
+                        </Nav>
+                    </div>
+                </div>
+            </Col>
+            {(!activeTab ||
+                tabs.find((tab) => tab.value === activeTab)
+                    .displayHeaderInput) && (
+                <Col xs={"4"}>
+                    <HeaderInput
+                        selectedEnvironment={environment}
+                        environments={environments}
+                        selectedSegment={segment}
+                        segments={segments}
+                        onEnvironmentChange={onEnvironmentChange}
+                        onSegmentChange={onSegmentChange}
+                    />
+                </Col>
+            )}
+        </Row>
+    );
+};
+
+const HeaderInput = (props) => {
+    return (
+        <Row style={{ alignItems: "flex-end" }}>
+            <Col xs="6">
+                <Label>Environment</Label>
+                <Select
+                    className="react-select primary"
+                    classNamePrefix="react-select"
+                    value={{
+                        value: props.selectedEnvironment,
+                        label: props.selectedEnvironment,
+                    }}
+                    options={props.environments.map((environment) => ({
+                        value: environment,
+                        label: environment,
+                    }))}
+                    onChange={(environment) =>
+                        props.onEnvironmentChange(environment.value)
+                    }
+                />
+            </Col>
+            <Col xs="6">
+                <Label>Segment</Label>
+                <Select
+                    className="react-select primary"
+                    classNamePrefix="react-select"
+                    value={{
+                        value: props.selectedSegment,
+                        label: props.selectedSegment,
+                    }}
+                    options={props.segments.map((segment) => ({
+                        value: segment,
+                        label: segment,
+                    }))}
+                    onChange={(segment) => props.onSegmentChange(segment.value)}
+                />
+            </Col>
+        </Row>
     );
 };
 
@@ -82,50 +271,5 @@ const Message = (props) => (
         </Card>
     </div>
 );
-
-const CollapseCard = (props) => {
-    const [open, setOpen] = React.useState(props.open);
-    const [hover, setHover] = React.useState(false);
-    return (
-        <div>
-            <Card>
-                <CardHeader
-                    role="tab"
-                    className="clickable"
-                    onClick={() => setOpen(!open)}
-                    onMouseEnter={() => setHover(true)}
-                    onMouseLeave={() => setHover(false)}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                        }}
-                    >
-                        <h5
-                            className={`${
-                                hover ? "" : "text-muted"
-                            } white-on-hover`}
-                            style={{
-                                flexGrow: 1,
-                            }}
-                        >
-                            {props.header}
-                        </h5>
-                        <i
-                            className={`${
-                                hover ? "" : "text-muted"
-                            } white-on-hover tim-icons icon-minimal-${
-                                open ? "up" : "down"
-                            }`}
-                        />
-                    </div>
-                </CardHeader>
-                <Collapse role="tabpanel" isOpen={open}>
-                    <CardBody>{props.children}</CardBody>
-                </Collapse>
-            </Card>
-        </div>
-    );
-};
 
 export default Experiment;

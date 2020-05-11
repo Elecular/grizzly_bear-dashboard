@@ -106,6 +106,21 @@ class ExperimentStats {
             }
             this.stats[stat.environment] = stat;
         });
+
+        this._initVariables();
+    }
+
+    _initVariables() {
+        this.variables = {};
+        for (const variation of this.info.variations) {
+            for (const variable of variation.variables) {
+                assignKeyToObject(
+                    this.variables,
+                    [variable.variableName, variation.variationName],
+                    variable.variableValue,
+                );
+            }
+        }
     }
 
     /**
@@ -317,6 +332,14 @@ class ExperimentStats {
             throw new Error("Control Group not found. This is a fatal error!");
         }
         return controlGroup.variationName;
+    }
+
+    getVariables() {
+        return Object.keys(this.variables);
+    }
+
+    getVariableValue(variableName, variationName) {
+        return this.variables[variableName][variationName];
     }
 }
 

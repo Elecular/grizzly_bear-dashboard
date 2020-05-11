@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import Experiments from "./components/Experiments";
 import Experiment from "./components/experiment/Experiment";
 

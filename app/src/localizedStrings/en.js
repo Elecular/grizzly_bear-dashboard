@@ -81,6 +81,8 @@ export default {
         },
         transactionAnalytics: {
             name: "Transaction Analytics",
+            summary: "Summary",
+            productBreakDown: "Product Breakdown",
         },
         customAnalytics: {
             name: "Custom Analytics",

@@ -4,7 +4,6 @@ import { Table, Button, UncontrolledAlert } from "reactstrap";
 import update from "immutability-helper";
 import EditableCell from "./EditableCell";
 import { isValidAlphaNumericString } from "../../../utils/strings";
-import { UncontrolledTooltip } from "reactstrap";
 
 const width = "35rem";
 const controlGoupName = "Control Group";

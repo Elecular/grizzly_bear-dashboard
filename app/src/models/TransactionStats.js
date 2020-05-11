@@ -69,10 +69,6 @@ const transactionDatasetDefinition = [
  */
 
 class TransactionStats extends ExperimentStats {
-    constructor(info, stats) {
-        super(info, stats);
-    }
-
     /**
      * Instantiates TransactionStats from given experimentStats
      * @param {ExperimentStats} experimentStats
