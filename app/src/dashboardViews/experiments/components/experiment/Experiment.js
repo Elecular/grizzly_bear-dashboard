@@ -12,19 +12,31 @@ import strings from "localizedStrings/strings";
 import { Nav, NavItem, NavLink } from "reactstrap";
 import { Row, Col, Label, BreadcrumbItem } from "reactstrap";
 import Select from "react-select";
+import PerfectScrollbar from "perfect-scrollbar";
 
 const translations = strings.experimentsTab;
 const defaultEnvironment = "prod";
 const defaultSegment = "all";
 
 const tabs = [
-    { value: "About", label: "About", displayHeaderInput: false },
-    { value: "Ads", label: "Ads", displayHeaderInput: true },
-    { value: "Transactions", label: "Transactions", displayHeaderInput: true },
+    {
+        value: "About",
+        label: "About",
+        displayHeaderInput: false,
+        minWidth: "40rem",
+    },
+    { value: "Ads", label: "Ads", displayHeaderInput: true, minWidth: "40rem" },
+    {
+        value: "Transactions",
+        label: "Transactions",
+        displayHeaderInput: true,
+        minWidth: "40rem",
+    },
     {
         value: "Custom Events",
         label: "Custom Events",
         displayHeaderInput: true,
+        minWidth: "40rem",
     },
 ];
 
@@ -35,10 +47,11 @@ const Experiment = (props) => {
         : undefined;
 
     const [experimentStats, setExperimentStats] = useState(undefined);
-    const [activeTab, setActiveTab] = useState(undefined);
+    const [activeTab, setActiveTab] = useState(tabs[0]);
     const [selectedSegment, setSegment] = React.useState(undefined);
     const [selectedEnvironment, setEnvironment] = React.useState(undefined);
     const [error, SetError] = useState(false);
+    const [scrollBar, setScrollBar] = useState(undefined);
 
     React.useEffect(() => {
         if (!experiment) return;
@@ -46,6 +59,17 @@ const Experiment = (props) => {
             .then(setExperimentStats)
             .catch((_) => SetError(true));
     }, [project._id, experiment, authToken]);
+
+    React.useEffect(() => {
+        if (!scrollBar && experimentStats) {
+            const ps = new PerfectScrollbar("#experiment-cardbody");
+            setScrollBar(ps);
+            window.addEventListener("resize", () => ps.update());
+        }
+        if (scrollBar) {
+            scrollBar.update();
+        }
+    }, [experimentStats, scrollBar, activeTab]);
 
     if (!experiment) {
         return <Redirect to="dashboard/experiments" />;
@@ -91,33 +115,43 @@ const Experiment = (props) => {
                     />
                 </CardHeader>
                 <CardBody
+                    id="experiment-cardbody"
                     style={{
                         paddingLeft: "2rem",
                         paddingRight: "2rem",
+                        position: "relative",
                     }}
                 >
-                    {activeTab == "About" && <About stats={experimentStats} />}
-                    {activeTab == "Ads" && (
-                        <AdAnalytics
-                            experimentStats={experimentStats}
-                            environment={selectedEnvironment}
-                            segment={selectedSegment}
-                        />
-                    )}
-                    {activeTab == "Transactions" && (
-                        <TransactionAnalytics
-                            experimentStats={experimentStats}
-                            environment={selectedEnvironment}
-                            segment={selectedSegment}
-                        />
-                    )}
-                    {activeTab == "Custom Events" && (
-                        <CustomEventAnalytics
-                            experimentStats={experimentStats}
-                            environment={selectedEnvironment}
-                            segment={selectedSegment}
-                        />
-                    )}
+                    <div
+                        style={{
+                            minWidth: activeTab.minWidth,
+                        }}
+                    >
+                        {activeTab.value == "About" && (
+                            <About stats={experimentStats} />
+                        )}
+                        {activeTab.value == "Ads" && (
+                            <AdAnalytics
+                                experimentStats={experimentStats}
+                                environment={selectedEnvironment}
+                                segment={selectedSegment}
+                            />
+                        )}
+                        {activeTab.value == "Transactions" && (
+                            <TransactionAnalytics
+                                experimentStats={experimentStats}
+                                environment={selectedEnvironment}
+                                segment={selectedSegment}
+                            />
+                        )}
+                        {activeTab.value == "Custom Events" && (
+                            <CustomEventAnalytics
+                                experimentStats={experimentStats}
+                                environment={selectedEnvironment}
+                                segment={selectedSegment}
+                            />
+                        )}
+                    </div>
                 </CardBody>
             </Card>
         </div>
@@ -186,13 +220,11 @@ const Header = (props) => {
                                 <NavItem key={tab.value}>
                                     <NavLink
                                         className={`${
-                                            activeTab === tab.value
+                                            activeTab.value === tab.value
                                                 ? "active"
                                                 : ""
                                         } clickable`}
-                                        onClick={() =>
-                                            onActiveTabChange(tab.value)
-                                        }
+                                        onClick={() => onActiveTabChange(tab)}
                                     >
                                         {tab.label}
                                     </NavLink>
@@ -203,7 +235,7 @@ const Header = (props) => {
                 </div>
             </Col>
             {(!activeTab ||
-                tabs.find((tab) => tab.value === activeTab)
+                tabs.find((tab) => tab.value === activeTab.value)
                     .displayHeaderInput) && (
                 <Col xs={"4"}>
                     <HeaderInput
