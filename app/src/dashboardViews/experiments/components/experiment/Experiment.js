@@ -58,7 +58,7 @@ const Experiment = (props) => {
         getExperimentStats(project._id, experiment, authToken)
             .then(setExperimentStats)
             .catch((err) => {
-                if (err.status === 401) {
+                if (err.status === 401 || err.stats === 403) {
                     alert("It seems like you are logged out. Pleas relogin");
                     forceLogin();
                     return;

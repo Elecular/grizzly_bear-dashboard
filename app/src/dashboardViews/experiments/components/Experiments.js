@@ -20,7 +20,7 @@ const Experiments = React.memo((props) => {
         getExperiments(project._id, authToken)
             .then(setExperiments)
             .catch((err) => {
-                if (err.status === 401) {
+                if (err.status === 401 || err.stats === 403) {
                     alert("It seems like you are logged out. Pleas relogin");
                     forceLogin();
                     return;
