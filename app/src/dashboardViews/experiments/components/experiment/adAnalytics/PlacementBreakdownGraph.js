@@ -26,9 +26,9 @@ const graphData = (metricOption, stats, environment, segment) => {
                         placementId,
                         metricOption.value,
                         variation,
-                        metricOption.normalized,
+                        true,
                     ) * (metricOption.normalized ? 100 : 1)
-                ).toFixed(metricOption.normalized ? 2 : 0),
+                ).toFixed(2),
             ),
             borderWidth: 1,
             barPercentage: 1,

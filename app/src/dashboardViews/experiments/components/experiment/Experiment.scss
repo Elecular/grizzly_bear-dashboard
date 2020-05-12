@@ -5,8 +5,9 @@
 }
 
 .link {
-    color: #ba54f5;
+    color: #ba54f5 !important;
     &:hover {
-        color: #e14eca
+        color: #e14eca !important;
+        cursor: pointer !important;
     }
 }

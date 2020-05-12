@@ -12,7 +12,7 @@ const metricOptions = [
     {
         value: "revenue",
         label: "Revenue",
-        graphLabel: "Revenue ($)",
+        graphLabel: "Revenue Per Session ($)",
         decimalPoints: 2,
         prefix: "$",
     },

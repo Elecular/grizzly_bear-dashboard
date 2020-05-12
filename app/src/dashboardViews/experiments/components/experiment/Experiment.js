@@ -12,7 +12,10 @@ import strings from "localizedStrings/strings";
 import { Nav, NavItem, NavLink } from "reactstrap";
 import { Row, Col, Label, BreadcrumbItem } from "reactstrap";
 import Select from "react-select";
-import PerfectScrollbar from "perfect-scrollbar";
+import InfoIcon from "./InfoIcon";
+import { negativeColor } from "utils/constants";
+import Message from "dashboardViews/Message";
+import { forceLogin } from "auth/login";
 
 const translations = strings.experimentsTab;
 const defaultEnvironment = "prod";
@@ -23,64 +26,51 @@ const tabs = [
         value: "About",
         label: "About",
         displayHeaderInput: false,
-        minWidth: "40rem",
     },
-    { value: "Ads", label: "Ads", displayHeaderInput: true, minWidth: "40rem" },
+    { value: "Ads", label: "Ads", displayHeaderInput: true },
     {
         value: "Transactions",
         label: "Transactions",
         displayHeaderInput: true,
-        minWidth: "40rem",
     },
     {
         value: "Custom Events",
         label: "Custom Events",
         displayHeaderInput: true,
-        minWidth: "40rem",
     },
 ];
 
 const Experiment = (props) => {
     const { authToken, project } = useContext(AuthorizationContext);
-    const experiment = props.location.state
-        ? props.location.state.selectedExperiment
-        : undefined;
+    const [experiment, setExperiment] = React.useState(
+        props.location.state
+            ? props.location.state.selectedExperiment
+            : undefined,
+    );
 
     const [experimentStats, setExperimentStats] = useState(undefined);
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [selectedSegment, setSegment] = React.useState(undefined);
     const [selectedEnvironment, setEnvironment] = React.useState(undefined);
-    const [error, SetError] = useState(false);
-    const [scrollBar, setScrollBar] = useState(undefined);
 
     React.useEffect(() => {
         if (!experiment) return;
         getExperimentStats(project._id, experiment, authToken)
             .then(setExperimentStats)
-            .catch((_) => SetError(true));
+            .catch((err) => {
+                if (err.status === 401) {
+                    alert("It seems like you are logged out. Pleas relogin");
+                    forceLogin();
+                    return;
+                }
+                setExperimentStats(() => {
+                    throw new Error("Error while loading experiment stats");
+                });
+            });
     }, [project._id, experiment, authToken]);
-
-    React.useEffect(() => {
-        if (!scrollBar && experimentStats) {
-            const ps = new PerfectScrollbar("#experiment-cardbody");
-            setScrollBar(ps);
-            window.addEventListener("resize", () => ps.update());
-        }
-        if (scrollBar) {
-            scrollBar.update();
-        }
-    }, [experimentStats, scrollBar, activeTab]);
 
     if (!experiment) {
         return <Redirect to="dashboard/experiments" />;
-    }
-    if (error) {
-        return (
-            <Message
-                title={translations.error}
-                message={translations.errorMessage}
-            />
-        );
     }
     if (!experimentStats) {
         return (
@@ -94,7 +84,10 @@ const Experiment = (props) => {
         <div className="content">
             <ol className="breadcrumb bg-transparent">
                 <BreadcrumbItem>
-                    <a className="link" href="dashboard/experiments">
+                    <a
+                        className="link"
+                        onClick={() => setExperiment(undefined)}
+                    >
                         Experiments
                     </a>
                 </BreadcrumbItem>
@@ -119,14 +112,17 @@ const Experiment = (props) => {
                     style={{
                         paddingLeft: "2rem",
                         paddingRight: "2rem",
-                        position: "relative",
                     }}
                 >
-                    <div
-                        style={{
-                            minWidth: activeTab.minWidth,
-                        }}
-                    >
+                    <div>
+                        {!experimentStats.hasData(selectedEnvironment) &&
+                            activeTab.displayHeaderInput && (
+                                <div style={{ width: "35rem" }}>
+                                    <p style={{ color: negativeColor }}>
+                                        {translations.noDataAlert}
+                                    </p>
+                                </div>
+                            )}
                         {activeTab.value == "About" && (
                             <About stats={experimentStats} />
                         )}
@@ -256,7 +252,26 @@ const HeaderInput = (props) => {
     return (
         <Row style={{ alignItems: "flex-end" }}>
             <Col xs="6">
-                <Label>Environment</Label>
+                <Label>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div
+                            style={{
+                                marginRight: "0.5rem",
+                            }}
+                        >
+                            Environment
+                        </div>
+                        <InfoIcon
+                            id={"environment-dropdown-info"}
+                            tooltip={translations.environmentToolTip}
+                        />
+                    </div>
+                </Label>
                 <Select
                     className="react-select primary"
                     classNamePrefix="react-select"
@@ -274,7 +289,26 @@ const HeaderInput = (props) => {
                 />
             </Col>
             <Col xs="6">
-                <Label>Segment</Label>
+                <Label>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div
+                            style={{
+                                marginRight: "0.5rem",
+                            }}
+                        >
+                            Segment
+                        </div>
+                        <InfoIcon
+                            id={"segment-dropdown-info"}
+                            tooltip={translations.segmentToolTip}
+                        />
+                    </div>
+                </Label>
                 <Select
                     className="react-select primary"
                     classNamePrefix="react-select"
@@ -292,20 +326,5 @@ const HeaderInput = (props) => {
         </Row>
     );
 };
-
-const Message = (props) => (
-    <div className="content">
-        <Card
-            className="text-center"
-            style={{
-                width: "40em",
-                padding: "2rem",
-            }}
-        >
-            <h4>{props.title}</h4>
-            <p>{props.message}</p>
-        </Card>
-    </div>
-);
 
 export default Experiment;

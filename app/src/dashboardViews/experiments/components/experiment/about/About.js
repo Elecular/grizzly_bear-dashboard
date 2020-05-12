@@ -28,7 +28,7 @@ const About = React.memo((props) => {
 
 const BasicInfo = (props) => (
     <div>
-        <div style={{ marginTop: "2rem", marginBottom: "0.75rem" }}>
+        <div style={{ marginTop: "1.5rem", marginBottom: "0.75rem" }}>
             <h6 className="text-muted">Experiment Name :</h6>
             <p>{props.info._id.experimentName}</p>
         </div>
@@ -68,7 +68,17 @@ const SettingInfo = (props) => {
                     <th className="text-left">Setting Name</th>
                     {variations.map((variation) => (
                         <th key={variation} className="text-left">
-                            {variation}
+                            <div
+                                style={{
+                                    display: "inline-flex",
+                                    marginRight: "0.5rem",
+                                }}
+                            >
+                                {variation}
+                            </div>
+                            {`(${Math.round(
+                                stats.getVariationAllocation(variation) * 100,
+                            )}%)`}
                         </th>
                     ))}
                 </tr>

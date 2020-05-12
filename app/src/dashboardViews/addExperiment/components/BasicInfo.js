@@ -82,6 +82,9 @@ class BasicInfo extends React.Component {
                         onChange={(ev) =>
                             this.updateExperimentName(ev.target.value)
                         }
+                        onBlur={() =>
+                            this.updateExperimentName(experimentName.trim())
+                        }
                     />
                     {invalidExperimentName && (
                         <FormText color="danger">

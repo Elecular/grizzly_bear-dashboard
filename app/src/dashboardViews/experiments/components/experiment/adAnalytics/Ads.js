@@ -3,6 +3,8 @@ import AdResults from "./Results";
 import PlacementBreakDown from "./PlacementBreakdown";
 import AdStats from "models/AdStats";
 import strings from "localizedStrings/strings";
+import InfoIcon from "../InfoIcon";
+
 const translations = strings.experimentsTab.adAnalytics;
 
 const AdAnalytics = React.memo((props) => {
@@ -14,7 +16,11 @@ const AdAnalytics = React.memo((props) => {
             <div>
                 <h4
                     className="text-muted"
-                    style={{ marginTop: "1rem", marginBottom: "1rem" }}
+                    style={{
+                        marginTop: "1rem",
+                        marginBottom: "1rem",
+                        display: "flex",
+                    }}
                 >
                     {translations.summary}
                 </h4>

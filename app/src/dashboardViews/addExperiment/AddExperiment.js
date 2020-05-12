@@ -9,6 +9,7 @@ import Decimal from "decimal.js";
 import { addExperiment } from "../../api/experiments";
 import { Modal, ModalBody, Button } from "reactstrap";
 import { forceLogin, isAuthTokenValid } from "../../auth/login";
+import ErrorBoundary from "dashboardViews/ErrorBoundary";
 
 const AddExperiment = (props) => {
     const { onNextClick = undefined } = props;
@@ -22,11 +23,13 @@ const AddExperiment = (props) => {
     const [openModal, setOpenModal] = React.useState(false);
     const [error, setError] = React.useState(undefined);
 
-    //Is authentication token is not valid for the next two hours
-    if (!project || !isAuthTokenValid(authToken, 2)) {
-        alert("You session is about to expire. Please relogin");
-        forceLogin(true);
-    }
+    React.useEffect(() => {
+        isAuthTokenValid(authToken, project, 2).then((isValid) => {
+            if (isValid) return;
+            alert("You session is about to expire. Please relogin");
+            forceLogin();
+        });
+    });
 
     let steps = [
         {
@@ -224,4 +227,10 @@ const constructExperimentBody = (
     })),
 });
 
-export default AddExperiment;
+const AddExperimentWrapper = (props) => (
+    <ErrorBoundary>
+        <AddExperiment {...props} />
+    </ErrorBoundary>
+);
+
+export default AddExperimentWrapper;

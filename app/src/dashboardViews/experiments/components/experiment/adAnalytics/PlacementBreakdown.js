@@ -12,12 +12,12 @@ const metricOptions = [
     {
         value: "adImpressions",
         label: "Ad Impressions",
-        graphLabel: "# Ad Impressions Per Sessions",
+        graphLabel: "# Ad Impressions Per Session",
     },
     {
         value: "adClicks",
         label: "Ad Clicks",
-        graphLabel: "# Ad Clicks Per Sessions",
+        graphLabel: "# Ad Clicks Per Session",
     },
     {
         value: "conversions",

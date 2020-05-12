@@ -26,7 +26,7 @@ const graphData = (metricOption, stats, environment, segment) => {
                         productId,
                         metricOption.value,
                         variation,
-                        metricOption.normalized,
+                        true,
                     ) * (metricOption.normalized ? 100 : 1)
                 ).toFixed(metricOption.decimalPoints),
             ),

@@ -8,6 +8,7 @@ import strings from "localizedStrings/strings";
 import { BreadcrumbItem } from "reactstrap";
 import ExperimentsTable from "./ExperimentsTable";
 import { Redirect } from "react-router-dom";
+import { forceLogin } from "auth/login";
 
 const Experiments = React.memo((props) => {
     const { authToken, project } = useContext(AuthorizationContext);
@@ -16,7 +17,18 @@ const Experiments = React.memo((props) => {
         undefined,
     );
     React.useEffect(() => {
-        getExperiments(project._id, authToken).then(setExperiments);
+        getExperiments(project._id, authToken)
+            .then(setExperiments)
+            .catch((err) => {
+                if (err.status === 401) {
+                    alert("It seems like you are logged out. Pleas relogin");
+                    forceLogin();
+                    return;
+                }
+                setExperiments(() => {
+                    throw new Error("Error while getting experiments");
+                });
+            });
     }, [authToken, project._id]);
 
     if (selectedExperiment !== undefined) {

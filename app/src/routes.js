@@ -1,4 +1,4 @@
-import Experiments from "dashboardViews/experiments/Index";
+import ExperimentsView from "dashboardViews/experiments/Index";
 import AddExperiment from "dashboardViews/addExperiment/AddExperiment";
 import strings from "localizedStrings/strings";
 
@@ -7,7 +7,7 @@ const routes = [
         path: "/experiments",
         name: strings.tabs.experiments,
         icon: "tim-icons icon-chart-bar-32",
-        component: Experiments,
+        component: ExperimentsView,
         layout: "/dashboard",
     },
     {

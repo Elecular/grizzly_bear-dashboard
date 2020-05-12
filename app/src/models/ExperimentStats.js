@@ -320,6 +320,14 @@ class ExperimentStats {
                   .map((variation) => variation.variationName);
     }
 
+    getVariationAllocation(variationName) {
+        return !this.info.variations
+            ? 0
+            : this.info.variations.find(
+                  (variation) => variation.variationName === variationName,
+              ).normalizedTrafficAmount;
+    }
+
     /**
      * Gets the controlgroup
      * @returns {String}
@@ -332,6 +340,19 @@ class ExperimentStats {
             throw new Error("Control Group not found. This is a fatal error!");
         }
         return controlGroup.variationName;
+    }
+
+    /**
+     * Checks if the given environment have any data at all
+     */
+    hasData(environment) {
+        const metrics = this.getMetrics(environment, "all");
+        const variations = this.getVariations();
+        let totalNumberOfSessions = 0;
+        for (const variation of variations) {
+            totalNumberOfSessions += metrics.get(sessionsMetricId, variation);
+        }
+        return totalNumberOfSessions > 0;
     }
 
     getVariables() {

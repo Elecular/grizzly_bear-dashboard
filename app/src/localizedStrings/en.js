@@ -76,6 +76,12 @@ export default {
         errorMessage:
             "There was an error while loading experiment stats. Please refresh the page and try again.",
         experimentInfo: "Experiment Info",
+        environmentToolTip:
+            "Environments allow you to organize your project into sections that correspond to your development environments",
+        segmentToolTip:
+            "Segments are divisions of your users based on characteristics such as age, sex, location etc.",
+        noDataAlert:
+            'This environment does not have any data yet. If you are logging events from your Unity editor, then choose the "dev" environment in the dropdown menu. Please note that it may take some time to process events.',
         adAnalytics: {
             name: "Ad Analytics",
             summary: "Summary",
