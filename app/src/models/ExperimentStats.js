@@ -113,6 +113,7 @@ class ExperimentStats {
     _initVariables() {
         this.variables = {};
         for (const variation of this.info.variations) {
+            if (!variation.variables) continue;
             for (const variable of variation.variables) {
                 assignKeyToObject(
                     this.variables,
@@ -356,7 +357,7 @@ class ExperimentStats {
     }
 
     getVariables() {
-        return Object.keys(this.variables);
+        return Object.keys(this.variables).sort();
     }
 
     getVariableValue(variableName, variationName) {

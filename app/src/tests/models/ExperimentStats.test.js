@@ -300,6 +300,70 @@ it("Can get sessions when present in multiple variations", () => {
     expect(result.get("sessions", "Variation 2")).toBe(0);
 });
 
+it("Can check if stats have any data", () => {
+    let stats = mockExperimentStats([
+        {
+            environment: "prod",
+            variations: {
+                "Variation 1": {
+                    segments: {
+                        all: {
+                            sessions: 22,
+                        },
+                    },
+                },
+                "Variation 5": {
+                    segments: {
+                        all: {
+                            sessions: 12,
+                        },
+                    },
+                },
+            },
+        },
+    ]);
+    expect(stats.hasData("prod")).toBe(true);
+    expect(stats.hasData("stage")).toBe(false);
+});
+
+it("Can get list of all variables", () => {
+    let stats = mockExperimentStats([
+        {
+            environment: "prod",
+            variations: {},
+        },
+    ]);
+    expect(stats.getVariables()).toStrictEqual(["var1", "var2"]);
+});
+
+it("Can get variable values", () => {
+    let stats = mockExperimentStats([
+        {
+            environment: "prod",
+            variations: {},
+        },
+    ]);
+    expect(stats.getVariableValue("var1", "Variation 2")).toBe("2.1");
+    expect(stats.getVariableValue("var2", "Variation 2")).toBe("2.2");
+    expect(stats.getVariableValue("var1", "Variation 1")).toBe("1.1");
+    expect(stats.getVariableValue("var2", "Variation 1")).toBe("1.2");
+    expect(stats.getVariableValue("var1", "Variation 5")).toBe("5.1");
+    expect(stats.getVariableValue("var2", "Variation 5")).toBe("5.2");
+});
+
+it("Can get variation allocation", () => {
+    let stats = mockExperimentStats([
+        {
+            environment: "prod",
+            variations: {},
+        },
+    ]);
+    expect(stats.getVariationAllocation("Variation 2")).toBe(0.5);
+    expect(stats.getVariationAllocation("Variation 1")).toBe(0.3);
+    expect(stats.getVariationAllocation("Variation 5")).toBe(0.05);
+    expect(stats.getVariationAllocation("Variation 3")).toBe(0.15);
+});
+
 const mockExperimentStats = (stats) => {
     return new ExperimentStats(experimentInfo, stats);
 };
@@ -309,18 +373,60 @@ const experimentInfo = {
         {
             variationName: "Variation 2",
             controlGroup: false,
+            variables: [
+                {
+                    variableName: "var1",
+                    variableValue: "2.1",
+                },
+                {
+                    variableName: "var2",
+                    variableValue: "2.2",
+                },
+            ],
+            normalizedTrafficAmount: 0.5,
         },
         {
             variationName: "Variation 1",
             controlGroup: false,
+            variables: [
+                {
+                    variableName: "var1",
+                    variableValue: "1.1",
+                },
+                {
+                    variableName: "var2",
+                    variableValue: "1.2",
+                },
+            ],
+            normalizedTrafficAmount: 0.3,
         },
         {
             variationName: "Variation 5",
             controlGroup: true,
+            variables: [
+                {
+                    variableName: "var1",
+                    variableValue: "5.1",
+                },
+                {
+                    variableName: "var2",
+                    variableValue: "5.2",
+                },
+            ],
+            normalizedTrafficAmount: 0.05,
         },
         {
             variationName: "Variation 3",
             controlGroup: false,
+            variables: [
+                {
+                    variableName: "var1",
+                },
+                {
+                    variableName: "var2",
+                },
+            ],
+            normalizedTrafficAmount: 0.15,
         },
     ],
 };
