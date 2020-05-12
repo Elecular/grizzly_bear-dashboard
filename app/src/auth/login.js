@@ -1,5 +1,6 @@
 import { Auth0Client } from "@auth0/auth0-spa-js";
 import { getProjects } from "api/experiments";
+import { number } from "prop-types";
 
 let auth0 = new Auth0Client({
     domain: "grizzly-bear.eu.auth0.com",
@@ -39,8 +40,27 @@ export const forceLogin = () => {
  * @async
  * Is the token valid for the next n number of hours for the given project
  */
-export const isAuthTokenValid = async (token, project, numberOfHours = 0) => {
+export const isAuthTokenValidForProject = async (
+    token,
+    project,
+    numberOfHours = 0,
+) => {
     if (!project || !project._id) return false;
+    try {
+        if (!isAuthTokenValid(token, numberOfHours)) {
+            return false;
+        }
+        const projects = await getProjects(token);
+        return projects.find((prj) => prj._id === project._id) !== undefined;
+    } catch (err) {
+        return false;
+    }
+};
+
+/**
+ * Is the token valid for the next n number of hours
+ */
+export const isAuthTokenValid = (token, numberOfHours = 0) => {
     try {
         const tokenClaims = JSON.parse(atob(token.split(".")[1]));
         if (
@@ -50,8 +70,7 @@ export const isAuthTokenValid = async (token, project, numberOfHours = 0) => {
             return false;
         }
 
-        const projects = await getProjects(token);
-        return projects.find((prj) => prj._id === project._id) !== undefined;
+        return true;
     } catch (err) {
         return false;
     }

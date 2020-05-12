@@ -8,7 +8,7 @@ import AuthorizationContext from "../../auth/authorizationContext";
 import Decimal from "decimal.js";
 import { addExperiment } from "../../api/experiments";
 import { Modal, ModalBody, Button } from "reactstrap";
-import { forceLogin, isAuthTokenValid } from "../../auth/login";
+import { forceLogin, isAuthTokenValidForProject } from "../../auth/login";
 import ErrorBoundary from "dashboardViews/ErrorBoundary";
 
 const AddExperiment = (props) => {
@@ -24,7 +24,7 @@ const AddExperiment = (props) => {
     const [error, setError] = React.useState(undefined);
 
     React.useEffect(() => {
-        isAuthTokenValid(authToken, project, 2).then((isValid) => {
+        isAuthTokenValidForProject(authToken, project, 2).then((isValid) => {
             if (isValid) return;
             alert("You session is about to expire. Please relogin");
             forceLogin();
