@@ -7,9 +7,9 @@ import strings from "../../localizedStrings/strings";
 import AuthorizationContext from "../../auth/authorizationContext";
 import Decimal from "decimal.js";
 import { addExperiment } from "../../api/experiments";
-import { Modal, ModalBody, Button } from "reactstrap";
 import { forceLogin, isAuthTokenValidForProject } from "../../auth/login";
 import ErrorBoundary from "dashboardViews/ErrorBoundary";
+import swal from "sweetalert";
 
 const AddExperiment = (props) => {
     const { onNextClick = undefined } = props;
@@ -20,14 +20,15 @@ const AddExperiment = (props) => {
     const [variationSettings, setVariationSettings] = React.useState([]);
 
     const [loading, setLoading] = React.useState(false);
-    const [openModal, setOpenModal] = React.useState(false);
-    const [error, setError] = React.useState(undefined);
 
     React.useEffect(() => {
         isAuthTokenValidForProject(authToken, project, 2).then((isValid) => {
             if (isValid) return;
-            alert("You session is about to expire. Please relogin");
-            forceLogin();
+            swal("You session is about to expire. Please login", {
+                icon: "info",
+            }).then((_) => {
+                forceLogin();
+            });
         });
     });
 
@@ -68,33 +69,60 @@ const AddExperiment = (props) => {
         },
     ];
 
-    const handleFormCompletion = () => {
+    const handleFormCompletion = async () => {
         if (loading) return;
-
-        const experiment = constructExperimentBody(
-            experimentInfo,
-            variations,
-            variationSettings,
-            project,
-        );
-        setError(false);
         setLoading(true);
-        setOpenModal(true);
-        addExperiment(project._id, experiment, authToken)
-            .then((addedExperiment) => {
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(strings.addExperimentsTab.errorOnOurSide);
-                if (err.httpError) {
-                    if (err.status === 409) {
-                        setError(
-                            strings.addExperimentsTab.experimentAlreadyExists,
-                        );
-                    }
-                }
-                setLoading(false);
+        swal({
+            title: "Creating . . .",
+            text: "We are creating the experiment for you.",
+            closeOnClickOutside: false,
+            closeOnEsc: false,
+            closeModal: false,
+            buttons: false,
+        });
+        try {
+            const experiment = constructExperimentBody(
+                experimentInfo,
+                variations,
+                variationSettings,
+                project,
+            );
+            await addExperiment(project._id, experiment, authToken);
+            swal.close();
+            await swal({
+                title: "Success",
+                icon: "success",
+                text: "You experiment is created!",
             });
+            window.location.href = "/dashboard/experiments";
+        } catch (err) {
+            swal.close();
+            if (err && err.httpError && err.status === 409) {
+                await swal({
+                    title: "Duplicate Name",
+                    text:
+                        "Experiment with the given name already eixsts. Please try again with another name",
+                    icon: "error",
+                });
+            } else if (err && err.httpError && (err.status === 403 || 409)) {
+                await swal({
+                    title: "Session Expired",
+                    text:
+                        "It looks like yor session has expired. Please relogin!",
+                    icon: "info",
+                });
+                forceLogin();
+            } else {
+                await swal({
+                    title: "Unexpected Error",
+                    text:
+                        "An unexepcted error occured. Please refresh and try again",
+                    icon: "error",
+                });
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -119,78 +147,10 @@ const AddExperiment = (props) => {
                     nextButtonClasses="btn-wd btn-primary"
                     previousButtonClasses="btn-wd btn-primary"
                     finishButtonClasses="btn-wd btn-primary"
-                    finishButtonClick={() => handleFormCompletion()}
+                    finishButtonClick={handleFormCompletion}
                 />
             </div>
-            <FeedbackModal
-                openModal={openModal}
-                loading={loading}
-                error={error}
-                onClick={(error) => {
-                    if (!error) {
-                        window.location.href = "/dashboard/experiments";
-                    } else {
-                        setOpenModal(false);
-                        setLoading(false);
-                    }
-                }}
-            />
         </div>
-    );
-};
-
-const FeedbackModal = (props) => {
-    const { openModal, loading, error, onClick } = props;
-    return (
-        <Modal isOpen={openModal} modalClassName="modal-black">
-            <ModalBody
-                className="text-center"
-                style={{
-                    padding: "2rem",
-                    width: "100%",
-                }}
-            >
-                {loading ? (
-                    <>
-                        <div
-                            className="spinner-border"
-                            style={{
-                                margin: "auto",
-                                marginBottom: "2rem",
-                            }}
-                        ></div>
-                        <p
-                            style={{
-                                margin: "auto",
-                                marginBottom: "2rem",
-                            }}
-                        >
-                            Creating experiment
-                        </p>
-                    </>
-                ) : (
-                    <>
-                        <p
-                            style={{
-                                margin: "auto",
-                                marginBottom: "2rem",
-                            }}
-                        >
-                            {error
-                                ? error
-                                : strings.addExperimentsTab.experimentIsCreated}
-                        </p>
-                        <Button
-                            color={error ? "danger" : "success"}
-                            size="sm"
-                            onClick={() => onClick(error ? error : undefined)}
-                        >
-                            {strings.addExperimentsTab.close}
-                        </Button>
-                    </>
-                )}
-            </ModalBody>
-        </Modal>
     );
 };
 

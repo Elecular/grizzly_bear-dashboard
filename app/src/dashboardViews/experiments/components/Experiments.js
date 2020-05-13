@@ -9,6 +9,7 @@ import { BreadcrumbItem } from "reactstrap";
 import ExperimentsTable from "./ExperimentsTable";
 import { Redirect } from "react-router-dom";
 import { forceLogin } from "auth/login";
+import swal from "sweetalert";
 
 const Experiments = React.memo((props) => {
     const { authToken, project } = useContext(AuthorizationContext);
@@ -21,8 +22,11 @@ const Experiments = React.memo((props) => {
             .then(setExperiments)
             .catch((err) => {
                 if (err.status === 401 || err.stats === 403) {
-                    alert("It seems like you are logged out. Pleas relogin");
-                    forceLogin();
+                    swal("It seems like you are logged out. Please login", {
+                        icon: "info",
+                    }).then((_) => {
+                        forceLogin();
+                    });
                     return;
                 }
                 setExperiments(() => {

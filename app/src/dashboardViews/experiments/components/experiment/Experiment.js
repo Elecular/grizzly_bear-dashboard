@@ -16,6 +16,7 @@ import InfoIcon from "./InfoIcon";
 import { negativeColor } from "utils/constants";
 import Message from "dashboardViews/Message";
 import { forceLogin } from "auth/login";
+import swal from "sweetalert";
 
 const translations = strings.experimentsTab;
 const defaultEnvironment = "prod";
@@ -59,8 +60,11 @@ const Experiment = (props) => {
             .then(setExperimentStats)
             .catch((err) => {
                 if (err.status === 401 || err.stats === 403) {
-                    alert("It seems like you are logged out. Pleas relogin");
-                    forceLogin();
+                    swal("It seems like you are logged out. Please login", {
+                        icon: "info",
+                    }).then((_) => {
+                        forceLogin();
+                    });
                     return;
                 }
                 setExperimentStats(() => {

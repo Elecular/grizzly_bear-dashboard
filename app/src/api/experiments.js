@@ -79,6 +79,23 @@ export const getExperiment = async (projectId, experimentName, authToken) => {
 };
 
 /**
+ *
+ * Stops the experiment
+ * @async
+ * @param {string} projectId
+ * @param {string} experimentName
+ * @param {string} authToken
+ * @return {Promise}
+ */
+export const stopExperiment = async (projectId, experimentName, authToken) => {
+    await post(
+        `${experimentsUri}/projects/${projectId}/experiments/${experimentName}/stop`,
+        {},
+        authToken,
+    );
+};
+
+/**
  * Adds experiment to the given project id
  * @param {string} projectId
  * @param {Object} experiment
