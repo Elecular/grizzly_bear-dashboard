@@ -250,10 +250,10 @@ table.tablesorter thead tr .headerSortDown {
 tr {
   &.clickable {
     &:hover {
-      background: rgba(29, 140 , 248, 0.05);
+      background: rgba(0, 0 , 0, 0.1);
     }
     &:active {
-      background: rgba(13, 69, 126, 0.08)
+      background: rgba(0, 0 , 0, 0.15)
     }
     cursor: pointer;
   }
