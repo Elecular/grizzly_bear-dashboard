@@ -10,6 +10,7 @@ import ExperimentsTable from "./ExperimentsTable";
 import { Redirect } from "react-router-dom";
 import { forceLogin } from "auth/login";
 import swal from "sweetalert";
+import Message from "dashboardViews/Message";
 
 const Experiments = React.memo((props) => {
     const { authToken, project } = useContext(AuthorizationContext);
@@ -17,28 +18,49 @@ const Experiments = React.memo((props) => {
     const [selectedExperiment, setSelectedExperiment] = React.useState(
         undefined,
     );
+    const [loading, setLoading] = React.useState(false);
+
     React.useEffect(() => {
-        getExperiments(project._id, authToken)
-            .then(setExperiments)
-            .catch((err) => {
+        const fetchExperiments = async () => {
+            setLoading(true);
+            try {
+                const experiments = await getExperiments(
+                    project._id,
+                    authToken,
+                );
+                setExperiments(experiments);
+            } catch (err) {
                 if (err.status === 401 || err.stats === 403) {
-                    swal("It seems like you are logged out. Please login", {
-                        icon: "info",
-                    }).then((_) => {
-                        forceLogin();
-                    });
+                    await swal(
+                        "It seems like you are logged out. Please login",
+                        {
+                            icon: "info",
+                        },
+                    );
+                    forceLogin();
                     return;
                 }
                 setExperiments(() => {
                     throw new Error("Error while getting experiments");
                 });
-            });
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchExperiments();
     }, [authToken, project._id]);
 
+    if (loading) {
+        return (
+            <Message
+                title="Loading ..."
+                message="We are loading your experiments"
+            />
+        );
+    }
     if (selectedExperiment !== undefined) {
         return <RedirectToExperiment selectedExperiment={selectedExperiment} />;
     }
-
     return (
         <div className="content">
             <ol className="breadcrumb bg-transparent">
