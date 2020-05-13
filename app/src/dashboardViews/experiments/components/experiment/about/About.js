@@ -28,9 +28,6 @@ const About = React.memo((props) => {
                     marginTop: "2rem",
                 }}
             >
-                <h4 className="text-muted" style={{ marginBottom: "1rem" }}>
-                    Settings
-                </h4>
                 <SettingInfo stats={stats} />
                 <StopExperiment info={stats.info} />
             </div>
@@ -77,9 +74,9 @@ const SettingInfo = (props) => {
         <Table>
             <thead className="text-primary">
                 <tr>
-                    <th className="text-left">Setting Name</th>
+                    <th className="text-left text-muted">Setting Name</th>
                     {variations.map((variation) => (
-                        <th key={variation} className="text-left">
+                        <th key={variation} className="text-left text-muted">
                             <div
                                 style={{
                                     display: "inline-flex",
@@ -177,7 +174,7 @@ const StopExperiment = (props) => {
             <Button
                 color="danger"
                 style={{
-                    marginTop: "1rem",
+                    marginTop: "1.5rem",
                     marginBottom: "1rem",
                 }}
                 onClick={handleStopExperimentClick}

@@ -9,10 +9,10 @@ const ExperimentsTable = (props) => {
         <Table>
             <thead className="text-primary">
                 <tr>
-                    <th>Name</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Status</th>
+                    <th className="text-muted">Name</th>
+                    <th className="text-muted">Start Date</th>
+                    <th className="text-muted">End Date</th>
+                    <th className="text-muted">Status</th>
                 </tr>
             </thead>
             <tbody>
