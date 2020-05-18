@@ -1,0 +1,43 @@
+name: Test
+
+on:
+    pull_request:
+        branches: [master]
+    push:
+        branches: [master]
+
+env:
+    GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+    GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
+    GKE_KEY: ${{secrets.GKE_KEY}}
+    REGISTRY_HOSTNAME: gcr.io
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        env:
+            node-dir: ./app
+        steps:
+            # Setting up repo with node
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: "12.x"
+
+            # Setup gcloud CLI
+            - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              with:
+                  version: "270.0.0"
+                  service_account_email: ${{ env.GKE_EMAIL }}
+                  service_account_key: ${{ env.GKE_KEY }}
+
+            # Configure docker to use the gcloud command-line tool as a credential helper
+            - run: |
+                  # Set up docker to authenticate
+                  # via gcloud command-line tool.
+                  gcloud auth configure-docker
+                    
+            # Running tests
+            - name: Testing
+              run: CI=true npm install && npm test
+              working-directory: ${{env.node-dir}}
