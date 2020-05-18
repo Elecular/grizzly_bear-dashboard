@@ -9,7 +9,7 @@ spec:
   ports:
     - protocol: "TCP"
       port: 3000
-      targetPort: 80
+      targetPort: 5000
   selector:
     app: "dashboard"
   type: "NodePort"
