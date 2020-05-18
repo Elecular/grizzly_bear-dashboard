@@ -4,7 +4,7 @@ import "@testing-library/jest-dom/extend-expect";
 import strings from "../../../localizedStrings/en";
 import AuthorizationContext from "../../../auth/authorizationContext";
 import AddExperiment from "../../../dashboardViews/addExperiment/AddExperiment";
-
+import moment from "moment";
 jest.mock("../../../api/experiments");
 jest.mock("../../../auth/login");
 
@@ -136,7 +136,7 @@ it("Can go to next step with valid experiment name after scheduling experiment a
 it("Can go to next step with valid experiment name, start date and undefined end date", async () => {
     const mockCallback = jest.fn();
     const addExperiment = render(tree(mockCallback));
-
+    const startTime = "05/04/6000 2:34 PM";
     const scheduleExperment = screen.getByLabelText(
         strings.addExperimentsTab.basicInfoComponent.scheduleExperiment,
     );
@@ -149,7 +149,7 @@ it("Can go to next step with valid experiment name, start date and undefined end
         target: { value: "Experiment Name" },
     });
     fireEvent.change(screen.getByTestId("startDate"), {
-        target: { value: "05/04/6000 2:34 PM" },
+        target: { value: startTime },
     });
     fireEvent.click(nextButton);
 
@@ -157,13 +157,15 @@ it("Can go to next step with valid experiment name, start date and undefined end
     const state = mockCallback.mock.calls[0][0];
     expect(state.experimentName).toEqual("Experiment Name");
     expect(state.scheduleExperiments).toEqual(true);
-    expect(state.startTime).toBe(127185251640000);
+    expect(state.startTime).toBe(moment(startTime).valueOf());
     expect(state.endTime).toBeUndefined();
 });
 
 it("Can go to next step with valid experiment name, start date and end date", async () => {
     const mockCallback = jest.fn();
     const addExperiment = render(tree(mockCallback));
+    const startTime = "05/04/6000 2:34 PM";
+    const endTime = "05/04/6005 2:34 PM";
 
     const scheduleExperment = screen.getByLabelText(
         strings.addExperimentsTab.basicInfoComponent.scheduleExperiment,
@@ -181,10 +183,10 @@ it("Can go to next step with valid experiment name, start date and end date", as
         target: { value: "Experiment Name" },
     });
     fireEvent.change(screen.getByTestId("startDate"), {
-        target: { value: "05/04/6000 2:34 PM" },
+        target: { value: startTime },
     });
     fireEvent.change(screen.getByTestId("endDate"), {
-        target: { value: "05/04/6005 2:34 PM" },
+        target: { value: endTime },
     });
     fireEvent.click(nextButton);
 
@@ -192,6 +194,6 @@ it("Can go to next step with valid experiment name, start date and end date", as
     const state = mockCallback.mock.calls[0][0];
     expect(state.experimentName).toEqual("Experiment Name");
     expect(state.scheduleExperiments).toEqual(true);
-    expect(state.startTime).toBe(127185251640000);
-    expect(state.endTime).toBe(127343018040000);
+    expect(state.startTime).toBe(moment(startTime).valueOf());
+    expect(state.endTime).toBe(moment(endTime).valueOf());
 });
