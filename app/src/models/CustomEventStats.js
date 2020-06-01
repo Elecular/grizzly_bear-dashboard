@@ -34,13 +34,13 @@ class CustomEventStats extends ExperimentStats {
 
         return {
             data: customEventDataset,
-            //Helper method for extracting transaction metrics
+            //Helper method for extracting custom event metrics
             get: function (customEventId, variation, normalized = false) {
                 return getValueFromObject(
                     this.data,
                     [
-                        customEventId,
                         ...(normalized ? ["normalized"] : []),
+                        customEventId,
                         ...[variation],
                     ],
                     0,

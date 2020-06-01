@@ -7,7 +7,7 @@ services:
         --randomDataDump \
         --projects 5e865ed82a2aeb6436f498dc,5e865ed82a2aeb6436f498de,5e865ed82a2aeb6436f498d7,5e865ed82a2aeb6436f498dd \
         --segments one,two \
-        --userActions ads/impression,ads/click,ads/impression/ad-1,ads/impression/ad-2,ads/click/ad-1,ads/click/ad-2,transactions/complete,transactions/complete/item-1,transactions/complete/item-2,custom/event-1,custom/event-2 \
+        --userActions \"ads/impression,ads/click,ads/impression/ad-1,ads/impression/ad-2,ads/click/ad-1,ads/click/ad-2,transactions/complete,transactions/complete/item-1,transactions/complete/item-2,custom/event-1,custom/event-2,retention/Day 1,retention/Day 7,retention/Day 30\"\
         --userVolume 500 --sessionVolume 2000 --activityVolume 2000 \
         --minTimestamp 79839129600000 --maxTimestamp 79839302400000 \
         --exit-on-completion && npx nodemon --unhandled-rejections=strict ./bin/www"

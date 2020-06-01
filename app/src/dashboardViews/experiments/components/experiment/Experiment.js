@@ -7,6 +7,7 @@ import { Redirect } from "react-router-dom";
 import About from "./about/About";
 import AdAnalytics from "./adAnalytics/Ads";
 import TransactionAnalytics from "./transactionAnalytics/Transaction";
+import RetentionStatsAnalytics from "./retentionStatAnalytics/RetentionStats";
 import CustomEventAnalytics from "./customEventAnalytics/CustomEvents";
 import strings from "localizedStrings/strings";
 import { Nav, NavItem, NavLink } from "reactstrap";
@@ -32,6 +33,11 @@ const tabs = [
     {
         value: "Transactions",
         label: "Transactions",
+        displayHeaderInput: true,
+    },
+    {
+        value: "Retention",
+        label: "Retention",
         displayHeaderInput: true,
     },
     {
@@ -139,6 +145,13 @@ const Experiment = (props) => {
                         )}
                         {activeTab.value == "Transactions" && (
                             <TransactionAnalytics
+                                experimentStats={experimentStats}
+                                environment={selectedEnvironment}
+                                segment={selectedSegment}
+                            />
+                        )}
+                        {activeTab.value == "Retention" && (
+                            <RetentionStatsAnalytics
                                 experimentStats={experimentStats}
                                 environment={selectedEnvironment}
                                 segment={selectedSegment}
