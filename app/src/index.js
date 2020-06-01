@@ -1,3 +1,8 @@
+//If we are in http and it is not localhost, we must redirect to https 
+if(window.location.href.substr(0, 5) !== 'https' && window.location.href.indexOf("localhost") < 0) {
+    window.location.href = window.location.href.replace('http', 'https');
+}
+
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
@@ -13,11 +18,6 @@ import "assets/scss/black-dashboard-pro-react.scss?v=1.1.0";
 import "assets/demo/demo.css";
 
 const hist = createBrowserHistory();
-
-//If we are in http and it is not localhost, we must redirect to https 
-if(window.location.href.substr(0, 5) !== 'https' && window.location.href.indexOf("localhost") < 0) {
-    window.location.href = window.location.href.replace('http', 'https');
-}
 
 login().then((authToken) => {
     initializeProject(authToken).then((project) => {
