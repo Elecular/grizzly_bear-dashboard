@@ -44,7 +44,11 @@ const RetentionStatsResults = (props) => {
                     </tr>
                     {retentionStatIds.map((retentionStatId) => (
                         <tr key={retentionStatId}>
-                            <td>{`${retentionStatId}`}</td>
+                            <ToolTipTableCell
+                                id={`retention-day7-info-icon`}
+                                text={retentionStatId}
+                                tooltip={`% of sessions that started ${retentionStatId.replace("Day ", "")} days after the game was installed lol`}
+                            />
                             <MetricRow
                                 retentionStatId={retentionStatId}
                                 stats={stats}

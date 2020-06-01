@@ -59,20 +59,7 @@ class RetentionStats extends ExperimentStats {
     }
 
     getRetentionStatIds(environment, segment) {
-        let metrics = this.getMetrics(environment, segment);
-        return [
-            ...new Set(
-                Object.keys(metrics.data)
-                    .map((metricId) => {
-                        if (this._isRetentionStatId(metricId)) {
-                            return this._getRetentiontStatId(metricId);
-                        }
-                    })
-                    .filter((retentionStatId) => retentionStatId !== undefined),
-            ),
-        ].sort((first, second) => {
-            return Number.parseInt(first.substring(4)) - Number.parseInt(second.substring(4));
-        });
+        return ["Day 1", "Day 7 ", "Day 30"];
     }
 
     _isRetentionStatId(metricId) {
