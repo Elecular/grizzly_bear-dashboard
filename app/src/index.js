@@ -1,8 +1,3 @@
-//If we are in http and it is not localhost, we must redirect to https 
-if(window.location.href.substr(0, 5) !== 'https' && window.location.href.indexOf("localhost") < 0) {
-    window.location.href = window.location.href.replace('http', 'https');
-}
-
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
