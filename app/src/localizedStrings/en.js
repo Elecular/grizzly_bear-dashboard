@@ -35,7 +35,7 @@ export default {
         },
         variationsComponent: {
             subTitle:
-                "Now, let's setup different variations of your game you would like to test",
+                "Now, let's setup different variations of your game",
             variationName: "Variation Name",
             trafficPercentage: "Traffic %",
             addVariation: "Add Variation",
