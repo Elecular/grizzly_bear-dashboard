@@ -5,11 +5,10 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import PerfectScrollbar from "perfect-scrollbar";
 // react plugin for creating notifications over the dashboard
 import NotificationAlert from "react-notification-alert";
-import { Modal, ModalBody, Button } from "reactstrap";
+import { Modal } from "reactstrap";
 
 // core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
-import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
 import logo from "assets/img/react-logo.png";
@@ -218,7 +217,7 @@ class DashboardLayout extends React.Component {
                         {this.getRoutes(routes)}
                         <Redirect from="*" to="/dashboard/experiments" />
                     </Switch>
-                    <Footer fluid />
+                    {/*<Footer fluid />*/}
                 </div>
                 <Modal
                     isOpen={this.state.isModalOpen}

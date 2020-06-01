@@ -5,11 +5,6 @@ import moment from "moment";
 import {
     Table,
     Button,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    CardHeader,
 } from "reactstrap";
 import { stopExperiment } from "api/experiments";
 import AuthorizationContext from "auth/authorizationContext";

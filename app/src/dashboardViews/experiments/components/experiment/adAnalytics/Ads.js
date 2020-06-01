@@ -3,7 +3,6 @@ import AdResults from "./Results";
 import PlacementBreakDown from "./PlacementBreakdown";
 import AdStats from "models/AdStats";
 import strings from "localizedStrings/strings";
-import InfoIcon from "../InfoIcon";
 
 const translations = strings.experimentsTab.adAnalytics;
 

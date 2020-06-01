@@ -45,7 +45,7 @@ const EditableCell = (props) => {
                                     setEdit(false);
                                 }
                             }}
-                            onBlur={(ev) => setEdit(false)}
+                            onBlur={(ev) => handleValueChange(ev.target.value)}
                         />
                     </FormGroup>
                 ) : (

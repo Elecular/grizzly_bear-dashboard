@@ -11,7 +11,6 @@ import {
   DropdownItem,
   UncontrolledDropdown,
   Input,
-  InputGroup,
   NavbarBrand,
   Navbar,
   NavLink,
@@ -150,14 +149,16 @@ class AdminNavbar extends React.Component {
                       <DropdownItem className="nav-item">Show Project ID</DropdownItem>
                     </NavLink>
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Download Unity SDK</DropdownItem>
+                      <DropdownItem className="nav-item" href="https://storage.googleapis.com/downloads.elecular.com/Elecular.unitypackage" download="Elecular.unitypackage">
+                        Download Unity SDK
+                      </DropdownItem>
                     </NavLink>
                     <DropdownItem divider tag="li" />
                     <NavLink
                         tag="li"
                         onClick={() => {
                           logout();
-                          window.location.href = "https://google.com"
+                          window.location.href = "https://elecular.com"
                         }}
                       >
                       <DropdownItem className="nav-item">Log out</DropdownItem>
