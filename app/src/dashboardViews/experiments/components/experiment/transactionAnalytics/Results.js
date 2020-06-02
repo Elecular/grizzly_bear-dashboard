@@ -108,7 +108,7 @@ const MetricRow = (props) => {
         if (normalized) {
             value = value * 100;
         }
-        value = value.toFixed(decimalPoints);
+        value = value.toLocaleString(undefined, { minimumFractionDigits:decimalPoints, maximumFractionDigits:decimalPoints });
 
         //Calculating diff from control group
         let diff = dataset.getDiff(metricName, variation);

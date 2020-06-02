@@ -39,7 +39,7 @@
         max-height: calc(100vh - 705px);
         z-index: 4;
         position: relative;
-        overflow: auto;
+        overflow: hidden;
 
         .dropdown .dropdown-backdrop{
           display: none !important;

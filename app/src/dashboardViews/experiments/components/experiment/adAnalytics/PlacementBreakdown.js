@@ -76,9 +76,9 @@ const PlacementBreakDown = (props) => {
                                 />
                                 {variations.map((variation) => (
                                     <td key={variation}>
-                                        {Math.round(
-                                            metrics.get("sessions", variation),
-                                        )}
+                                        {metrics.get("sessions", variation)
+                                            .toLocaleString(undefined, { maximumFractionDigits:0 }) 
+                                        }
                                     </td>
                                 ))}
                             </tr>
@@ -127,9 +127,9 @@ const MetricRow = (props) => {
             metricOption.normalized,
         );
         if (metricOption.normalized) {
-            value = (value * 100).toFixed(2);
+            value = (value * 100).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
         } else {
-            value = Math.round(value);
+            value = Math.round(value).toLocaleString();
         }
 
         //Calculating diff from control group

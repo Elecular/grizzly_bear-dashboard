@@ -78,7 +78,7 @@ const ProductBreakDown = (props) => {
                                     <td key={variation}>
                                         {Math.round(
                                             metrics.get("sessions", variation),
-                                        )}
+                                        ).toLocaleString()}
                                     </td>
                                 ))}
                             </tr>
@@ -127,7 +127,7 @@ const MetricRow = (props) => {
         if (metricOption.normalized) {
             value = value * 100;
         }
-        value = value.toFixed(metricOption.decimalPoints);
+        value = value.toLocaleString(undefined, { minimumFractionDigits:metricOption.decimalPoints, maximumFractionDigits:metricOption.decimalPoints });
 
         //Calculating diff from control group
         let diff = productDataset.getDiff(

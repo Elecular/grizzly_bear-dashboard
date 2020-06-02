@@ -11,7 +11,7 @@ import { Modal } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
-import logo from "assets/img/react-logo.png";
+import logo from "assets/img/dashboard-logo.svg";
 
 //Modals
 import ShowProjectID from "dashboardModals/ShowProjectID";
@@ -194,7 +194,7 @@ class DashboardLayout extends React.Component {
                     activeColor={this.state.activeColor}
                     logo={{
                         outterLink: "",
-                        text: "Game Gram",
+                        text: "Elecular",
                         imgSrc: logo,
                     }}
                     closeSidebar={this.closeSidebar}

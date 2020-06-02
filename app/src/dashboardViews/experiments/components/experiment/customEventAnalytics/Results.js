@@ -39,7 +39,7 @@ const CustomEventResults = (props) => {
                         />
                         {variations.map((variation) => (
                             <td key={variation}>
-                                {Math.round(metrics.get("sessions", variation))}
+                                {Math.round(metrics.get("sessions", variation)).toLocaleString()}
                             </td>
                         ))}
                     </tr>
@@ -71,7 +71,7 @@ const MetricRow = (props) => {
 
     return variations.map((variation) => {
         //Calculating metric value
-        let value = customEventDataset.get(customEventId, variation).toFixed(2);
+        let value = customEventDataset.get(customEventId, variation).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
 
         //Calculating diff from control group
         let diff = customEventDataset.getDiff(customEventId, variation);

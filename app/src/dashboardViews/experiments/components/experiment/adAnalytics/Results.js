@@ -112,9 +112,9 @@ const MetricRow = (props) => {
         //Calculating metric value
         let value = dataset.get(metricName, variation, normalized);
         if (normalized) {
-            value = (value * 100).toFixed(2);
+            value = (value * 100).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
         } else {
-            value = Math.round(value);
+            value = Math.round(value).toLocaleString();
         }
 
         //Calculating diff from control group
