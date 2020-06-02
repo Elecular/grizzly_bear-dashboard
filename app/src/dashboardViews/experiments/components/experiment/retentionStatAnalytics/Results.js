@@ -42,21 +42,24 @@ const RetentionStatsResults = (props) => {
                             </td>
                         ))}
                     </tr>
-                    {retentionStatIds.map((retentionStatId) => (
-                        <tr key={retentionStatId}>
-                            <ToolTipTableCell
-                                id={`retention-day7-info-icon`}
-                                text={retentionStatId}
-                                tooltip={`% of sessions that started ${retentionStatId.replace("Day ", "")} days after the game was installed lol`}
-                            />
-                            <MetricRow
-                                retentionStatId={retentionStatId}
-                                stats={stats}
-                                environment={environment}
-                                segment={segment}
-                            />
-                        </tr>
-                    ))}
+                    {retentionStatIds.map((retentionStatId) => {
+                        var retentionDay = Number.parseInt(retentionStatId.replace("Day ", ""));
+                        return (
+                            <tr key={retentionStatId}>
+                                <ToolTipTableCell
+                                    id={`retention-day-${retentionDay}-info-icon`}
+                                    text={retentionStatId}
+                                    tooltip={`% of sessions that started ${retentionDay} day${retentionDay == 1 ? "" : "s"} after the game was installed`}
+                                />
+                                <MetricRow
+                                    retentionStatId={retentionStatId}
+                                    stats={stats}
+                                    environment={environment}
+                                    segment={segment}
+                                />
+                            </tr>
+                        )
+                    })}
                 </tbody>
             </Table>
         </div>
@@ -71,7 +74,7 @@ const MetricRow = (props) => {
         environment,
         segment,
     );
-
+        
     return variations.map((variation) => {
         //Calculating metric value
         let value = (retentionStatDataset.get(retentionStatId, variation, true)*100).toFixed(2);

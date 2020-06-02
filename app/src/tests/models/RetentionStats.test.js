@@ -3,6 +3,7 @@ import RetentionStats from "models/RetentionStats";
 it("can get retnetion stat ids", () => {
     const stats = mockRetentionStats();
     expect(stats.getRetentionStatIds("prod", "all")).toStrictEqual([
+        "Day 1",
         "Day 7",
         "Day 30",
     ]);

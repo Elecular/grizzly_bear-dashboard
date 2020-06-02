@@ -26,7 +26,7 @@ class RetentionStats extends ExperimentStats {
                 dimension: "count",
             }),
         );
-
+        
         retentionStatDataset = this.getDataset(
             environment,
             segment,
@@ -59,7 +59,7 @@ class RetentionStats extends ExperimentStats {
     }
 
     getRetentionStatIds(environment, segment) {
-        return ["Day 1", "Day 7 ", "Day 30"];
+        return ["Day 1", "Day 7", "Day 30"];
     }
 
     _isRetentionStatId(metricId) {
