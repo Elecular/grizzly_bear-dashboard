@@ -8,7 +8,7 @@ if(window.location.href.substr(0, 5) !== 'https' && window.location.href.indexOf
 }
 
 let auth0 = new Auth0Client({
-    domain: "grizzly-bear.eu.auth0.com",
+    domain: "auth.elecular.com",
     client_id: "Pl5MQWjdBJQxxWJ4maJf8p9R5rB9Op1K",
     audience: "http://www.grizzlybear-experiments.com",
 });
@@ -33,6 +33,9 @@ const login = async () => {
 
 export const logout = () => {
     localStorage.removeItem("authToken");
+    auth0.logout({
+        returnTo: "https://elecular.com"
+    })
 };
 
 export const forceLogin = () => {

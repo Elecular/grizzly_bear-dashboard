@@ -158,7 +158,6 @@ class AdminNavbar extends React.Component {
                         tag="li"
                         onClick={() => {
                           logout();
-                          window.location.href = "https://elecular.com"
                         }}
                       >
                       <DropdownItem className="nav-item">Log out</DropdownItem>

@@ -99,20 +99,20 @@ $orange-color:               #f96332 !default;
 $default:       #344675 !default;
 $primary:       #1d8cf8 !default;
 $secondary:     #e14eca !default;
-$success:       #28a745 !default;
+$success:       #00f2c3 !default;
 $info:          #1d8cf8 !default;
 $warning:       #ff8d72 !default;
-$danger:        #dc3545 !default;
-$black:         #212132 !default;
+$danger:        #fd5d93 !default;
+$black:         #222a42 !default;
 
 
 // gradient
 $default-states:       #263148 !default;
 $primary-states:       #3358f4 !default;
-$success-states:       #28a745 !default;
+$success-states:       #0098f0 !default;
 $info-states:          #3358f4 !default;
 $warning-states:       #ff6491 !default;
-$danger-states:        #dc3545 !default;
+$danger-states:        #ec250d !default;
 $black-states:         #1d253b !default;
 
 $background-black:           #1e1e2f !default;
@@ -894,7 +894,7 @@ $card-border-color:                 rgba($black, .05);
 $card-inner-border-radius:          calc(#{$card-border-radius} - #{$card-border-width});
 $card-cap-bg:                       $gray-100 !default;
 $card-bg:                           $white !default;
-$card-black-background:             #212132 !default;
+$card-black-background:             #27293d !default;
 $card-img-overlay-padding:          1.25rem !default;
 
 //$card-group-margin:                 ($grid-gutter-width / 2);
