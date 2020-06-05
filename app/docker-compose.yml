@@ -22,7 +22,7 @@ services:
     depends_on:
       - user-activity-web
       - experiments-web
-    image: gcr.io/grizzly-bear-271511/grizzly-bear-stage/batch/user-activity:latest
+    image: gcr.io/grizzly-bear-271511/grizzly-bear-prod/batch/user-activity:latest
     links:
     - "db:database"
     - "experiments-web:experiments-web"
@@ -37,7 +37,7 @@ services:
   user-activity-web:
     depends_on:
       - db
-    image: gcr.io/grizzly-bear-271511/grizzly-bear-stage/web/user-activity:latest
+    image: gcr.io/grizzly-bear-271511/grizzly-bear-prod/web/user-activity:latest
     ports:
     - '80:80'
     volumes:
@@ -52,7 +52,7 @@ services:
   experiments-web:
     depends_on:
       - db
-    image: gcr.io/grizzly-bear-271511/grizzly-bear-stage/experiments:latest
+    image: gcr.io/grizzly-bear-271511/grizzly-bear-prod/experiments:latest
     ports:
     - '3000:80' # Public API
     - '8080:8080' # Private API
@@ -65,7 +65,7 @@ services:
       MONGODB_DATABASE: experiments
       AUTH_SIGN_KEY_URI: https://grizzly-bear.eu.auth0.com/.well-known/jwks.json
       AUTH_AUDIENCE: http://www.grizzlybear-experiments.com
-      AUTH_DOMAIN: https://grizzly-bear.eu.auth0.com/
+      AUTH_DOMAIN: https://auth.elecular.com/
   db:
     image: mongo
     environment:
