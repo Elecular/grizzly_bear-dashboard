@@ -34,7 +34,8 @@ const login = async () => {
 export const logout = () => {
     localStorage.removeItem("authToken");
     auth0.logout({
-        returnTo: "https://elecular.com"
+        returnTo: "https://elecular.com",
+        federated: true
     })
 };
 
