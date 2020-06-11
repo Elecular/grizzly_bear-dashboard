@@ -15,6 +15,9 @@ import logo from "assets/img/dashboard-logo.svg";
 
 //Modals
 import ShowProjectID from "dashboardModals/ShowProjectID";
+import TermsOfUse from "dashboardModals/TermsOfUse";
+import { hasAcceptedTermsOfUse, acceptTermsOfUse } from "../api/experiments";
+import AuthorizationContext from "auth/authorizationContext";
 
 let ps;
 
@@ -34,9 +37,12 @@ class DashboardLayout extends React.Component {
 
         this.displayModal = this.displayModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.showTermsOfUse = this.showTermsOfUse.bind(this);
     }
 
     componentDidMount() {
+        this.showTermsOfUse();
+
         if (navigator.platform.indexOf("Win") > -1) {
             document.documentElement.classList.add("perfect-scrollbar-on");
             document.documentElement.classList.remove("perfect-scrollbar-off");
@@ -51,6 +57,14 @@ class DashboardLayout extends React.Component {
             }
         }
         window.addEventListener("scroll", this.showNavbarButton);
+    }
+
+    async showTermsOfUse() {
+        const accepted = await hasAcceptedTermsOfUse(this.context.authToken);
+        if(!accepted) {
+            //TODO:  Display modal to show terms of use
+            //this.displayModal("termsOfUse", false)
+        }
     }
 
     componentWillUnmount() {
@@ -154,11 +168,12 @@ class DashboardLayout extends React.Component {
         document.documentElement.classList.remove("nav-open");
     };
 
-    displayModal(option) {
+    displayModal(option, closable=true) {
         this.setState({
             ...this.state,
             isModalOpen: true,
             modalOption: option,
+            closable: closable
         });
     }
 
@@ -221,25 +236,29 @@ class DashboardLayout extends React.Component {
                 </div>
                 <Modal
                     isOpen={this.state.isModalOpen}
-                    toggle={this.closeModal}
+                    toggle={this.state.closable ? this.closeModal : undefined}
                     modalClassName="modal-black"
                 >
-                    <div className="modal-header">
-                        <button
-                            type="button"
-                            className="btn-link"
-                            data-dismiss="modal"
-                            aria-label="Close"
-                            onClick={this.closeModal}
-                        >
-                            <i className="tim-icons icon-simple-remove"></i>
-                        </button>
-                    </div>
-                    <ShowProjectID onClose={this.closeModal} />
+                    {this.state.closable &&
+                        <div className="modal-header">
+                            <button
+                                type="button"
+                                className="btn-link"
+                                data-dismiss="modal"
+                                aria-label="Close"
+                                onClick={this.closeModal}
+                            >
+                                <i className="tim-icons icon-simple-remove"></i>
+                            </button>
+                        </div>
+                    }
+                    {this.state.modalOption === "showProjectId" && <ShowProjectID onClose={this.closeModal} />}
+                    {this.state.modalOption === "termsOfUse" && <TermsOfUse onClose={this.closeModal} />}
                 </Modal>
             </div>
         );
     }
 }
 
+DashboardLayout.contextType = AuthorizationContext;
 export default DashboardLayout;

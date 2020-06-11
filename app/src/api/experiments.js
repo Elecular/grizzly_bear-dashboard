@@ -109,3 +109,28 @@ export const addExperiment = async (projectId, experiment, authToken) => {
         authToken,
     );
 };
+
+/**
+ * Has the owner accepted terms of use
+ * @param {string} authToken
+ * @returns {Promise<Array<Object>>}
+ */
+export const hasAcceptedTermsOfUse = async (authToken) => {
+    return (await get(
+        `${experimentsUri}/owner/termsOfUse/accept/status`,
+        authToken,
+    )).accepted;
+};
+
+/**
+ * Accepts terms of use
+ * @param {string} authToken
+ * @returns {Promise<Array<Object>>}
+ */
+export const acceptTermsOfUse = async (authToken) => {
+    return await post(
+        `${experimentsUri}/owner/termsOfUse/accept`,
+        {},
+        authToken,
+    );
+};
