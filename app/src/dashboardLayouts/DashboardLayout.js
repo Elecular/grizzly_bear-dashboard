@@ -207,11 +207,6 @@ class DashboardLayout extends React.Component {
                     {...this.props}
                     routes={routes}
                     activeColor={this.state.activeColor}
-                    logo={{
-                        outterLink: "",
-                        text: "Elecular",
-                        imgSrc: logo,
-                    }}
                     closeSidebar={this.closeSidebar}
                 />
                 <div

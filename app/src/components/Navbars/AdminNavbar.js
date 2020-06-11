@@ -20,6 +20,7 @@ import {
   UncontrolledTooltip
 } from "reactstrap";
 
+import fullLogo from "assets/img/full-logo.png";
 import { logout } from "auth/login";
 
 class AdminNavbar extends React.Component {
@@ -70,7 +71,10 @@ class AdminNavbar extends React.Component {
       modalSearch: !this.state.modalSearch
     });
   };
+
   render() {
+    console.log(fullLogo.imgSrc)
+
     return (
       <>
         <Navbar
@@ -116,7 +120,15 @@ class AdminNavbar extends React.Component {
                 </button>
               </div>
               <NavbarBrand href="#pablo" onClick={e => e.preventDefault()}>
-                {this.props.brandText}
+                <div className="logo-img">
+                  <img 
+                    src={fullLogo}
+                    style={{
+                      height: "40px",
+                      paddingBottom: "10px"
+                    }} 
+                  />
+                </div>
               </NavbarBrand>
             </div>
             <button
