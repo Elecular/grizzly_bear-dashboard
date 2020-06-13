@@ -11,9 +11,11 @@ let auth0 = new Auth0Client({
     domain: "auth.elecular.com",
     client_id: "Pl5MQWjdBJQxxWJ4maJf8p9R5rB9Op1K",
     audience: "http://www.grizzlybear-experiments.com",
+    redirect_uri: window.location.origin
 });
 
 const login = async () => {
+    if(window.location.protocol !== "https:") return;
     const query = window.location.search;
     if (query.includes("code=") && query.includes("state=")) {
         await auth0.handleRedirectCallback();
@@ -24,9 +26,7 @@ const login = async () => {
     const authToken = getTokenFromLocalStorage();
     const isAuthenticated = authToken !== undefined;
     if (!isAuthenticated) {
-        await auth0.loginWithRedirect({
-            redirect_uri: window.location.origin,
-        });
+        await auth0.loginWithRedirect();
     }
     return authToken;
 };
