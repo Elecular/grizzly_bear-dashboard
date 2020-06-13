@@ -36,4 +36,6 @@ login().then((authToken) => {
             document.getElementById("root"),
         );
     });
+}).catch(err => {
+    console.log("Redirecting to https...");
 });

@@ -15,7 +15,9 @@ let auth0 = new Auth0Client({
 });
 
 const login = async () => {
-    if(window.location.protocol !== "https:") return;
+    if(window.location.protocol !== "https:" && window.location.href.indexOf("localhost") < 0) {
+        throw new Error("Protocal must be HTTPS");
+    }
     const query = window.location.search;
     if (query.includes("code=") && query.includes("state=")) {
         await auth0.handleRedirectCallback();
