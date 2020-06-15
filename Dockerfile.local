@@ -1,0 +1,12 @@
+FROM node:12.16
+RUN npm install -g serve
+COPY /app code
+WORKDIR /code
+
+ENV NODE_ENV=production
+ENV REACT_APP_EXPERIMENTS_SERVICE="http://localhost:6300"
+ENV REACT_APP_USER_ACTIVITY_SERVICE="http://localhost:6600"
+
+RUN npm ci
+RUN npm run build
+CMD ["serve", "-s", "build"]

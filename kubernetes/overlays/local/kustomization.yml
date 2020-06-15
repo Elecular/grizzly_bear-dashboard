@@ -5,5 +5,7 @@ resources:
   - ../../base
 images:
   - name: XXXX
-    newName: experiments
+    newName: dashboard
     newTag: dev
+patches:
+  - port.yml
