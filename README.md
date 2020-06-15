@@ -1,37 +1,38 @@
-## Welcome to GitHub Pages
+# Dashboard
 
-You can use the [editor on GitHub](https://github.com/nj20/grizzly_bear-dashboard/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+![Test](https://github.com/Elecular/grizzly_bear-dashboard/workflows/Test/badge.svg?branch=master) ![Deploy To GKE](https://github.com/Elecular/grizzly_bear-dashboard/workflows/Deploy%20To%20GKE/badge.svg?branch=master)
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+---
 
-### Markdown
+### Introduction
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+The dashboard is made using react and uses creative-tim's [black dashboard](https://www.creative-tim.com/product/black-dashboard-pro-react) template.
 
-```markdown
-Syntax highlighted code block
+### Development
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+1. You must first install [Google Cloud CLI](https://cloud.google.com/sdk/docs/downloads-versioned-archives)
+2. You must then authenticate docker to use the google cloud registry using the following command
+```
+gcloud auth configure-docker
+```
+3. You can run the following command to start the **web service** in development mode. The service will automatically pickup any changes!
+```
+npm run start:dev
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+---
 
-### Jekyll Themes
+### Testing
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/nj20/grizzly_bear-dashboard/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```
+npm test
+```
 
-### Support or Contact
+---
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### Deploying Docker Image
+
+The docker image is located at the root directory. This can be used to deploy a container for this service. The docker file has some hard coded environment variables that set the backend services it connects to. Hence, if you simply deploy the image, it will connect to the production servers. 
+
+
+

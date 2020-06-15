@@ -20,7 +20,7 @@ const ToolTipTableCell = (props) => {
             <div style={{ marginRight: "0.5rem", display: "inline-flex" }}>
                 {text}
             </div>
-            <i id={id} className={"tim-icons icon-alert-circle-exc"} />
+            <i id={id} className={"fa fa-info-circle"} />
             <Tooltip target={id} isOpen={isOpen} placement="right">
                 {tooltip}
             </Tooltip>

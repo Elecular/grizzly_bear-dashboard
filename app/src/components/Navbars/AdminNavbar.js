@@ -73,8 +73,6 @@ class AdminNavbar extends React.Component {
   };
 
   render() {
-    console.log(fullLogo.imgSrc)
-
     return (
       <>
         <Navbar
