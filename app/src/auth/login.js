@@ -7,10 +7,21 @@ if(window.location.href.substr(0, 5) !== 'https' && window.location.href.indexOf
     window.location.href = window.location.href.replace('http', 'https');
 }
 
+const domain = process.env.REACT_APP_AUTH_DOMAIN;
+const clientId = process.env.REACT_APP_AUTH_CLIENT_ID;
+const audience = process.env.REACT_APP_AUTH_AUDIENCE;
+
+if(!domain || !clientId || !audience) {
+    throw new Error(
+        "REACT_APP_AUTH0 environment variables are not passed",
+    );
+}
+
+
 let auth0 = new Auth0Client({
-    domain: "auth.elecular.com",
-    client_id: "Pl5MQWjdBJQxxWJ4maJf8p9R5rB9Op1K",
-    audience: "http://www.grizzlybear-experiments.com",
+    domain: domain,
+    client_id: clientId,
+    audience: audience,
     redirect_uri: window.location.origin
 });
 

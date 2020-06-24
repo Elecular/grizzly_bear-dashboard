@@ -18,6 +18,9 @@ services:
     environment:
       REACT_APP_EXPERIMENTS_SERVICE: http://localhost:3000
       REACT_APP_USER_ACTIVITY_SERVICE: http://localhost:80
+      REACT_APP_AUTH_DOMAIN: grizzly-bear-dev.eu.auth0.com
+      REACT_APP_AUTH_CLIENT_ID: 6m6D5qYQJp69OZShjYs6PzLmbQKuntK1
+      REACT_APP_AUTH_AUDIENCE: http://www.grizzlybear-experiments.com
   spark-batch:
     depends_on:
       - user-activity-web
@@ -63,9 +66,9 @@ services:
     environment:
       MONGODB_URL: mongodb://username:password@database:27017
       MONGODB_DATABASE: experiments
-      AUTH_SIGN_KEY_URI: https://grizzly-bear.eu.auth0.com/.well-known/jwks.json
+      AUTH_SIGN_KEY_URI: https://grizzly-bear-dev.eu.auth0.com/.well-known/jwks.json
       AUTH_AUDIENCE: http://www.grizzlybear-experiments.com
-      AUTH_DOMAIN: https://auth.elecular.com/
+      AUTH_DOMAIN: https://grizzly-bear-dev.eu.auth0.com/
   db:
     image: mongo
     environment:
