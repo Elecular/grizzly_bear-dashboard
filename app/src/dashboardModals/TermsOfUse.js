@@ -22,7 +22,7 @@ const TermsOfUse = (props) => {
         >
             <h4>Terms Of Service</h4>
             <p>
-                Please accept our <a href="https://google.com" target="_blank">Terms Of Service</a> before using our application
+                Please accept our <a href="https://storage.googleapis.com/downloads.elecular.com/legal/Elecular-UG-Cloud-Terms-Of-Service.pdf" target="_blank">Terms Of Service</a> before using our application
             </p>
             <div style={{
                 marginTop: "1rem"

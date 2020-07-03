@@ -62,8 +62,7 @@ class DashboardLayout extends React.Component {
     async showTermsOfUse() {
         const accepted = await hasAcceptedTermsOfUse(this.context.authToken);
         if(!accepted) {
-            //TODO:  Display modal to show terms of use
-            //this.displayModal("termsOfUse", false)
+            this.displayModal("termsOfUse", false)
         }
     }
 
