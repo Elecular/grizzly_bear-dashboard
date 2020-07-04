@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import ProjectView from "dashboardViews/admin/overview/ProjectView";
 
 function Index() {
-    console.log("Render Index");
     return (
         <div className="content">
             <Switch>
