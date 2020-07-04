@@ -19,4 +19,21 @@ const routes = [
     },
 ];
 
+export const adminRoutes = [
+    {
+        path: "/experiments",
+        name: strings.tabs.experiments,
+        icon: "tim-icons icon-chart-bar-32",
+        component: ExperimentsView,
+        layout: "/admin",
+    },
+    {
+        path: "/add-experiment",
+        name: strings.tabs.addExperiment,
+        icon: "tim-icons icon-simple-add",
+        component: AddExperiment,
+        layout: "/admin",
+    },
+];
+
 export default routes;

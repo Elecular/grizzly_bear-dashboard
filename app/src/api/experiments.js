@@ -134,3 +134,39 @@ export const acceptTermsOfUse = async (authToken) => {
         authToken,
     );
 };
+
+/**
+ * ADMIN ENDPOINTS
+ */
+
+ /**
+ * Gets all projects
+ * @param {string} authToken
+ * @returns {Promise<Array<Object>>}
+ */
+export const getAllProjectsAdAdmin = async (authToken) => {
+    return await get(`${experimentsUri}/admin/projects`, authToken);
+};
+
+/**
+ * Gets all owners
+ * @param {string} authToken
+ * @returns {Promise<Array<Object>>}
+ */
+export const getAllOwnersAsAdmin = async (authToken) => {
+    const owners = await get(`${experimentsUri}/admin/owners`, authToken);
+    const result = {};
+    for (let owner of owners) {
+        result[owner.user_id] = owner;
+    }
+    return result;
+};
+
+/**
+ * Gets details about given projects
+ * @param {string} authToken
+ * @returns {Promise<Array<Object>>}
+ */
+export const getProjectDetailsAsAdmin = async (authToken, projectId) => {
+    return await get(`${experimentsUri}/admin/project/${projectId}`, authToken);
+};

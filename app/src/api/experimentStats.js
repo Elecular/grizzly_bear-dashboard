@@ -5,6 +5,7 @@ import { getExperiment } from "api/experiments";
 import { get } from "./request";
 import ExperimentStats from "models/ExperimentStats";
 import "api/experiments"; //Importing typedefs
+let moment = require('moment');
 
 /**
  * This is the response from getExperimentStats
@@ -64,7 +65,7 @@ export default async function (projectId, experiment, authToken) {
 
 /**
  *
- * Gets all experiments owned by this user in the given project
+ * Gets experiment stats for given project, experiment and environment
  * @async
  * @param {String} authToken
  * @param {String} projectId
@@ -80,6 +81,43 @@ const getUserActivityStats = async (
 ) => {
     return await get(
         `${userActivityUri}/projects/${projectId}/experiments/${experimentName}/environments/${environment}/stats`,
+        authToken,
+    );
+};
+
+/**
+ * ADMIN ENDPOINTS
+ */
+
+/**
+ * Gets MAU stats for all projects
+ * @param {string} authToken
+ * @returns {Promise<Array<Object>>}
+ */
+export const getMauStats = async (authToken) => {
+    const currentDate = new Date();
+    const date = moment(currentDate).format("DD-MM-YYYY");
+    const stats = await get(
+        `${userActivityUri}/admin/projects/stats/mau?date=${date}`,
+        authToken,
+    );
+    const result = {};
+
+    for (let stat of stats) {
+        result[stat.projectId] = stat.count;
+    }
+
+    return result;
+};
+
+/**
+ * Gets performance stats of given project
+ * @param {string} authToken
+ * @returns {Promise<Array<Object>>}
+ */
+export const getPerformanceStats = async (authToken, projectId) => {
+    return await get(
+        `${userActivityUri}/admin/projects/${projectId}/stats/performance`,
         authToken,
     );
 };
