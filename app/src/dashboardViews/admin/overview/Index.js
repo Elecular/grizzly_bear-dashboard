@@ -1,9 +1,10 @@
 import React from "react";
-import ProjectsOverview from "dashboardViews/admin/overview/ProjectsOverview";
+import AllProjectsView from "dashboardViews/admin/overview/AllProjectsView";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import ProjectView from "dashboardViews/admin/overview/ProjectView";
 
 function Index() {
+    console.log("Render Index");
     return (
         <div className="content">
             <Switch>
@@ -11,7 +12,7 @@ function Index() {
                     <ProjectView />
                 </Route>
                 <Route path="/admin/overview">
-                    <ProjectsOverview />
+                    <AllProjectsView />
                 </Route>
             </Switch>
         </div>

@@ -2,10 +2,13 @@ import React, { useState, useContext, useEffect } from "react";
 import { Card } from "reactstrap";
 import ProjectList from "./ProjectList";
 import AuthorizationContext from "auth/authorizationContext"
-import { getMauStats } from "api/experimentStats";
+import { getMauStats } from "api/userActivity";
 import { getAllOwnersAsAdmin, getAllProjectsAsAdmin } from "api/experiments";
 
-const ProjectsOverview = (props) => {
+/**
+ * Renders overview of all projects in elecular
+ */
+const AllProjectsView = (props) => {
 
     const [projects, setProjects] = useState([]);
     const [owners, setOwners] = useState({});
@@ -41,4 +44,4 @@ const ProjectsOverview = (props) => {
     </div>
 };
 
-export default ProjectsOverview;
+export default AllProjectsView;

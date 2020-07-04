@@ -116,8 +116,14 @@ export const getMauStats = async (authToken) => {
  * @returns {Promise<Array<Object>>}
  */
 export const getPerformanceStats = async (authToken, projectId) => {
-    return await get(
+    let stats = await get(
         `${userActivityUri}/admin/projects/${projectId}/stats/performance`,
         authToken,
     );
+    
+    let processedStats = {}
+    for(let stat of stats) {
+        processedStats[`${stat.date}:${stat.userAction}`] = stat;
+    }
+    return processedStats
 };

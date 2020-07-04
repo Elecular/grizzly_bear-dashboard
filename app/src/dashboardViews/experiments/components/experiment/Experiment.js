@@ -1,6 +1,6 @@
 import "./Experiment.scss";
 import React, { useContext, useState } from "react";
-import getExperimentStats from "api/experimentStats";
+import getExperimentStats from "api/userActivity";
 import AuthorizationContext from "auth/authorizationContext";
 import { Card, CardHeader, CardBody, Collapse } from "reactstrap";
 import { Redirect } from "react-router-dom";

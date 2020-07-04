@@ -2,6 +2,9 @@ import React from "react";
 import { Table } from "reactstrap";
 import moment from "moment";
 
+/**
+ * A table of projects
+ */
 const ProjectList = (props) => {
     const { projects, owners, mauStats } = props;
 

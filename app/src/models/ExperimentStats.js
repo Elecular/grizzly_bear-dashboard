@@ -61,7 +61,7 @@ This is an example sessions metric. This means that 10 sessions happened in vari
  */
 
 /**
- * @typedef {import("../api/experimentStats").UserActivityStats} UserActivityStats
+ * @typedef {import("../api/userActivity").UserActivityStats} UserActivityStats
  */
 
 /**
@@ -78,7 +78,7 @@ const essentialMetricIds = [sessionsMetricId, "ads/impression", "ads/click"];
  * This class is used for storing experiment stats
  * It has many useful methods to extracts stats.
  *
- * NOTE: Do not initialize manually. Use api/experimentStats to initialize this class
+ * NOTE: Do not initialize manually. Use api/userActivity to initialize this class
  */
 class ExperimentStats {
     /**
