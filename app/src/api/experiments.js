@@ -144,7 +144,7 @@ export const acceptTermsOfUse = async (authToken) => {
  * @param {string} authToken
  * @returns {Promise<Array<Object>>}
  */
-export const getAllProjectsAdAdmin = async (authToken) => {
+export const getAllProjectsAsAdmin = async (authToken) => {
     return await get(`${experimentsUri}/admin/projects`, authToken);
 };
 

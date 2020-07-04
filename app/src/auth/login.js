@@ -1,6 +1,5 @@
 import { Auth0Client } from "@auth0/auth0-spa-js";
 import { getProjects } from "api/experiments";
-import { number } from "prop-types";
 
 //If we are in http and it is not localhost, we must redirect to https 
 if(window.location.href.substr(0, 5) !== 'https' && window.location.href.indexOf("localhost") < 0) {
@@ -22,7 +21,8 @@ let auth0 = new Auth0Client({
     domain: domain,
     client_id: clientId,
     audience: audience,
-    redirect_uri: window.location.origin
+    redirect_uri: window.location.origin,
+    scope: "admin.read:projects admin.read:owners"
 });
 
 const login = async () => {

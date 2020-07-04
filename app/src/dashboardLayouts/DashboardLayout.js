@@ -15,7 +15,7 @@ import routes from "routes.js";
 //Modals
 import ShowProjectID from "dashboardModals/ShowProjectID";
 import TermsOfUse from "dashboardModals/TermsOfUse";
-import { hasAcceptedTermsOfUse, acceptTermsOfUse } from "../api/experiments";
+import { hasAcceptedTermsOfUse } from "../api/experiments";
 import AuthorizationContext from "auth/authorizationContext";
 
 let ps;

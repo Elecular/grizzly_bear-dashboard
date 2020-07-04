@@ -178,7 +178,7 @@ class AdminDashboardLayout extends React.Component {
                     />
                     <Switch>
                         {this.getRoutes(adminRoutes)}
-                        <Redirect from="*" to="/admin/projects" />
+                        <Redirect from="/admin" to="/admin/overview" />
                     </Switch>
                     {/*<Footer fluid />*/}
                 </div>
