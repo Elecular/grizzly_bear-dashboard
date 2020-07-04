@@ -96,7 +96,7 @@ const getUserActivityStats = async (
  */
 export const getMauStats = async (authToken) => {
     const currentDate = new Date();
-    const date = moment(currentDate).format("DD-MM-YYYY");
+    const date = moment(currentDate).subtract(3, "days").format("DD-MM-YYYY");
     const stats = await get(
         `${userActivityUri}/admin/projects/stats/mau?date=${date}`,
         authToken,
