@@ -29,7 +29,7 @@ class AdminNavbar extends React.Component {
     this.state = {
       collapseOpen: false,
       modalSearch: false,
-      color: "navbar-transparent"
+      color: "navbar-transparent",
     };
   }
   componentDidMount() {
@@ -119,12 +119,12 @@ class AdminNavbar extends React.Component {
               </div>
               <NavbarBrand href="#pablo" onClick={e => e.preventDefault()}>
                 <div className="logo-img">
-                  <img 
+                  <img
                     src={fullLogo}
                     style={{
                       height: "40px",
                       paddingBottom: "10px"
-                    }} 
+                    }}
                   />
                 </div>
               </NavbarBrand>
@@ -142,41 +142,43 @@ class AdminNavbar extends React.Component {
               <span className="navbar-toggler-bar navbar-kebab" />
               <span className="navbar-toggler-bar navbar-kebab" />
             </button>
-            <Collapse navbar isOpen={this.state.collapseOpen}>
-              <Nav className="ml-auto" navbar>
-                <UncontrolledDropdown nav>
-                  <DropdownToggle
-                    caret
-                    color="default"
-                    data-toggle="dropdown"
-                    nav
-                  >
-                    <i className="tim-icons icon-single-02" />
-                    <p className="d-lg-none">Profile</p>
-                  </DropdownToggle>
-                  <DropdownMenu className="dropdown-navbar" right tag="ul">
-                    <NavLink tag="li" onClick={this.props.showProjectId}>
-                      <DropdownItem className="nav-item">Show Project ID</DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item" href="https://storage.googleapis.com/downloads.elecular.com/Elecular.unitypackage" download="Elecular.unitypackage">
-                        Download Unity SDK
+            {this.props.displayOptions &&
+              <Collapse navbar isOpen={this.state.collapseOpen}>
+                <Nav className="ml-auto" navbar>
+                  <UncontrolledDropdown nav>
+                    <DropdownToggle
+                      caret
+                      color="default"
+                      data-toggle="dropdown"
+                      nav
+                    >
+                      <i className="tim-icons icon-single-02" />
+                      <p className="d-lg-none">Profile</p>
+                    </DropdownToggle>
+                    <DropdownMenu className="dropdown-navbar" right tag="ul">
+                      <NavLink tag="li" onClick={this.props.showProjectId}>
+                        <DropdownItem className="nav-item">Show Project ID</DropdownItem>
+                      </NavLink>
+                      <NavLink tag="li">
+                        <DropdownItem className="nav-item" href="https://storage.googleapis.com/downloads.elecular.com/Elecular.unitypackage" download="Elecular.unitypackage">
+                          Download Unity SDK
                       </DropdownItem>
-                    </NavLink>
-                    <DropdownItem divider tag="li" />
-                    <NavLink
+                      </NavLink>
+                      <DropdownItem divider tag="li" />
+                      <NavLink
                         tag="li"
                         onClick={() => {
                           logout();
                         }}
                       >
-                      <DropdownItem className="nav-item">Log out</DropdownItem>
-                    </NavLink>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-                <li className="separator d-lg-none" />
-              </Nav>
-            </Collapse>
+                        <DropdownItem className="nav-item">Log out</DropdownItem>
+                      </NavLink>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                  <li className="separator d-lg-none" />
+                </Nav>
+              </Collapse>
+            }
           </Container>
         </Navbar>
         <Modal

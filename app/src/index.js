@@ -11,6 +11,7 @@ import "assets/css/nucleo-icons.css";
 import "react-notification-alert/dist/animate.css";
 import "assets/scss/black-dashboard-pro-react.scss?v=1.1.0";
 import "assets/demo/demo.css";
+import AdminDashboardLayout from "dashboardLayouts/AdminDashboardLayout";
 
 const hist = createBrowserHistory();
 
@@ -28,6 +29,10 @@ login().then((authToken) => {
                         <Route
                             path="/dashboard"
                             render={(props) => <DashboardLayout {...props} />}
+                        />
+                        <Route
+                            path="/admin"
+                            render={(props) => <AdminDashboardLayout {...props} />}
                         />
                         {<Redirect from="/" to="/dashboard/experiments" />}
                     </Switch>

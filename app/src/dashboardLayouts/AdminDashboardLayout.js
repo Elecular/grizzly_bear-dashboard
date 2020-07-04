@@ -1,26 +1,23 @@
 import React from "react";
 
+import { NavbarBrand } from "reactstrap";
+
 import { Route, Switch, Redirect } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
 // react plugin for creating notifications over the dashboard
 import NotificationAlert from "react-notification-alert";
-import { Modal } from "reactstrap";
 
 // core components
-import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import routes from "routes.js";
+import { adminRoutes } from "routes.js";
+import AdminNavbar from "components/Navbars/AdminNavbar.js";
 
-//Modals
-import ShowProjectID from "dashboardModals/ShowProjectID";
-import TermsOfUse from "dashboardModals/TermsOfUse";
-import { hasAcceptedTermsOfUse } from "../api/experiments";
 import AuthorizationContext from "auth/authorizationContext";
 
 let ps;
 
-class DashboardLayout extends React.Component {
+class AdminDashboardLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -33,14 +30,9 @@ class DashboardLayout extends React.Component {
         };
         //document.body.classList.toggle("sidebar-mini");
         //document.body.classList.toggle("white-content");
-
-        this.displayModal = this.displayModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.showTermsOfUse = this.showTermsOfUse.bind(this);
     }
 
     componentDidMount() {
-        this.showTermsOfUse();
 
         if (navigator.platform.indexOf("Win") > -1) {
             document.documentElement.classList.add("perfect-scrollbar-on");
@@ -56,13 +48,6 @@ class DashboardLayout extends React.Component {
             }
         }
         window.addEventListener("scroll", this.showNavbarButton);
-    }
-
-    async showTermsOfUse() {
-        const accepted = await hasAcceptedTermsOfUse(this.context.authToken);
-        if(!accepted) {
-            this.displayModal("termsOfUse", false)
-        }
     }
 
     componentWillUnmount() {
@@ -113,7 +98,7 @@ class DashboardLayout extends React.Component {
             if (prop.collapse) {
                 return this.getRoutes(prop.views);
             }
-            if (prop.layout === "/dashboard") {
+            if (prop.layout === "/admin") {
                 return (
                     <Route
                         path={prop.layout + prop.path}
@@ -166,44 +151,15 @@ class DashboardLayout extends React.Component {
         document.documentElement.classList.remove("nav-open");
     };
 
-    displayModal(option, closable=true) {
-        this.setState({
-            ...this.state,
-            isModalOpen: true,
-            modalOption: option,
-            closable: closable
-        });
-    }
-
-    closeModal() {
-        this.setState({
-            ...this.state,
-            isModalOpen: false,
-            modalOption: undefined,
-        });
-    }
-
     render() {
         return (
             <div className="wrapper">
                 <div className="rna-container">
                     <NotificationAlert ref="notificationAlert" />
                 </div>
-                <div
-                    className="navbar-minimize-fixed"
-                    style={{ opacity: this.state.opacity }}
-                >
-                    <button
-                        className="minimize-sidebar btn btn-link btn-just-icon"
-                        onClick={this.handleMiniClick}
-                    >
-                        <i className="tim-icons icon-align-center visible-on-sidebar-regular text-muted" />
-                        <i className="tim-icons icon-bullet-list-67 visible-on-sidebar-mini text-muted" />
-                    </button>
-                </div>
                 <Sidebar
                     {...this.props}
-                    routes={routes}
+                    routes={adminRoutes}
                     activeColor={this.state.activeColor}
                     closeSidebar={this.closeSidebar}
                 />
@@ -215,43 +171,21 @@ class DashboardLayout extends React.Component {
                     <AdminNavbar
                         {...this.props}
                         handleMiniClick={this.handleMiniClick}
-                        brandText={this.getActiveRoute(routes)}
+                        brandText={this.getActiveRoute(adminRoutes)}
                         sidebarOpened={this.state.sidebarOpened}
                         toggleSidebar={this.toggleSidebar}
-                        displayOptions={true}
-                        showProjectId={() => this.displayModal("showProjectId")}
+                        displayOptions={false}
                     />
                     <Switch>
-                        {this.getRoutes(routes)}
-                        <Redirect from="*" to="/dashboard/experiments" />
+                        {this.getRoutes(adminRoutes)}
+                        <Redirect from="/admin" to="/admin/overview" />
                     </Switch>
                     {/*<Footer fluid />*/}
                 </div>
-                <Modal
-                    isOpen={this.state.isModalOpen}
-                    toggle={this.state.closable ? this.closeModal : undefined}
-                    modalClassName="modal-black"
-                >
-                    {this.state.closable &&
-                        <div className="modal-header">
-                            <button
-                                type="button"
-                                className="btn-link"
-                                data-dismiss="modal"
-                                aria-label="Close"
-                                onClick={this.closeModal}
-                            >
-                                <i className="tim-icons icon-simple-remove"></i>
-                            </button>
-                        </div>
-                    }
-                    {this.state.modalOption === "showProjectId" && <ShowProjectID onClose={this.closeModal} />}
-                    {this.state.modalOption === "termsOfUse" && <TermsOfUse onClose={this.closeModal} />}
-                </Modal>
             </div>
         );
     }
 }
 
-DashboardLayout.contextType = AuthorizationContext;
-export default DashboardLayout;
+AdminDashboardLayout.contextType = AuthorizationContext;
+export default AdminDashboardLayout;

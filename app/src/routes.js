@@ -1,6 +1,7 @@
 import ExperimentsView from "dashboardViews/experiments/Index";
 import AddExperiment from "dashboardViews/addExperiment/AddExperiment";
 import strings from "localizedStrings/strings";
+import Index from "dashboardViews/admin/overview/Index";
 
 const routes = [
     {
@@ -17,6 +18,16 @@ const routes = [
         component: AddExperiment,
         layout: "/dashboard",
     },
+];
+
+export const adminRoutes = [
+    {
+        path: "/overview",
+        name: "Overview",
+        icon: "tim-icons icon-world",
+        component: Index,
+        layout: "/admin",
+    }
 ];
 
 export default routes;
