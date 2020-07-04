@@ -11,8 +11,7 @@ import NotificationAlert from "react-notification-alert";
 // core components
 import Sidebar from "components/Sidebar/Sidebar.js";
 import { adminRoutes } from "routes.js";
-import logo from "assets/img/dashboard-logo.svg";
-import fullLogo from "assets/img/full-logo.png";
+import AdminNavbar from "components/Navbars/AdminNavbar.js";
 
 import AuthorizationContext from "auth/authorizationContext";
 
@@ -169,18 +168,14 @@ class AdminDashboardLayout extends React.Component {
                     ref="mainPanel"
                     data={this.state.activeColor}
                 >
-                    <NavbarBrand href="#pablo" onClick={e => e.preventDefault()}>
-                        <div className="logo-img">
-                            <img
-                                src={fullLogo}
-                                style={{
-                                    height: "40px",
-                                    paddingTop: "10px",
-                                    paddingLeft: "30px"
-                                }}
-                            />
-                        </div>
-                    </NavbarBrand>
+                    <AdminNavbar
+                        {...this.props}
+                        handleMiniClick={this.handleMiniClick}
+                        brandText={this.getActiveRoute(adminRoutes)}
+                        sidebarOpened={this.state.sidebarOpened}
+                        toggleSidebar={this.toggleSidebar}
+                        displayOptions={false}
+                    />
                     <Switch>
                         {this.getRoutes(adminRoutes)}
                         <Redirect from="*" to="/admin/projects" />

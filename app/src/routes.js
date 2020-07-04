@@ -1,6 +1,7 @@
 import ExperimentsView from "dashboardViews/experiments/Index";
 import AddExperiment from "dashboardViews/addExperiment/AddExperiment";
 import strings from "localizedStrings/strings";
+import ProjectView from "dashboardViews/admin/projectsView/ProjectView";
 
 const routes = [
     {
@@ -21,16 +22,16 @@ const routes = [
 
 export const adminRoutes = [
     {
-        path: "/experiments",
-        name: strings.tabs.experiments,
-        icon: "tim-icons icon-chart-bar-32",
-        component: ExperimentsView,
+        path: "/projects",
+        name: "Projects",
+        icon: "tim-icons icon-bullet-list-67",
+        component: ProjectView,
         layout: "/admin",
     },
     {
         path: "/add-experiment",
         name: strings.tabs.addExperiment,
-        icon: "tim-icons icon-simple-add",
+        icon: "tim-icons icon-app",
         component: AddExperiment,
         layout: "/admin",
     },

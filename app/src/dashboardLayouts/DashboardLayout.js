@@ -11,7 +11,6 @@ import { Modal } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
-import logo from "assets/img/dashboard-logo.svg";
 
 //Modals
 import ShowProjectID from "dashboardModals/ShowProjectID";
@@ -219,7 +218,7 @@ class DashboardLayout extends React.Component {
                         brandText={this.getActiveRoute(routes)}
                         sidebarOpened={this.state.sidebarOpened}
                         toggleSidebar={this.toggleSidebar}
-                        displayOptions={false}
+                        displayOptions={true}
                         showProjectId={() => this.displayModal("showProjectId")}
                     />
                     <Switch>
