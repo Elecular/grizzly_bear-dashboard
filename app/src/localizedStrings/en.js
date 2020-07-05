@@ -81,7 +81,7 @@ export default {
         segmentToolTip:
             "Segments are divisions of your users based on characteristics such as age, sex, location etc.",
         noDataAlert:
-            'This environment does not have any data yet. If you are logging events from your Unity editor, then choose the "dev" environment in the dropdown menu. Please note that it may take some time to process events.',
+            'This environment does not have any data yet. If you are logging events from your Unity editor, then choose the "dev" environment in the dropdown menu. Please note that it may take up to 3 hours to process events.',
         adAnalytics: {
             name: "Ad Analytics",
             summary: "Summary",
