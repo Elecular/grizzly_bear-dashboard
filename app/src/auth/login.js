@@ -104,8 +104,8 @@ const setTokenInLocalStorage = (token) => {
 const getTokenFromLocalStorage = () => {
     try {
         const authToken = localStorage.getItem("authToken");
-        //If experiation date does not exist or the token is going to expire within 6 hours, we want to treat this is an invalid token.
-        return isAuthTokenValid(authToken, 6) ? authToken : undefined;
+        //If experiation date does not exist or the token is going to expire within 2 hours, we want to treat this is an invalid token.
+        return isAuthTokenValid(authToken, 2) ? authToken : undefined;
     } catch (err) {
         return undefined;
     }
